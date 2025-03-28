@@ -3,8 +3,8 @@
 # Usage
 # --------
 # curl -O https://Georg9741.github.io/archinstall/install.sh
-# chmod +x InstallArch.sh
-# ./InstallArch.sh
+# chmod +x install.sh
+# ./install.sh
 
 # current criterias for this script to be functional: uefi mode, harddrive name sda, intel cpu, intel graphics
 
