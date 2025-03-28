@@ -2,7 +2,7 @@
 
 # Usage
 # --------
-# curl -O https://georg9741.github.io/arch-auto-install/InstallArch.sh
+# curl -O https://Georg9741.github.io/archinstall/install.sh
 # chmod +x InstallArch.sh
 # ./InstallArch.sh
 
