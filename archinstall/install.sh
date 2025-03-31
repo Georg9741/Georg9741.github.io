@@ -76,9 +76,9 @@ echo
 sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
 sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
 sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
-echo "EFI system partition ($sda1size MB)"
-echo "BIOS boot partition ($sda1size MB)"
-echo "Linux LUKS ($sda3size GB)"
+echo "sda1: EFI system partition ($sda1size MB)"
+echo "sda2: BIOS boot partition ($sda2size MB)"
+echo "sda3: Linux LUKS ($sda3size GB)"
 echo
 read -p "Press enter to continue"
 
