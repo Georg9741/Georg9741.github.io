@@ -1,0 +1,37 @@
+# to do
+- temp fix required: sed -i -e 's/\r$//' install.sh
+  - re-save file to make it work without it
+- install yay/paru
+- append to '~/.bashrc':
+> if [ -f ~/.bash_aliases ]; then
+>     . ~/.bash_aliases
+> fi
+>
+> fastfetch
+- create '~/.bash_aliases':
+> alias miku='sudo'
+> alias aliases='sudo nano ~/.bash_aliases && . ~/.bash_aliases'
+> alias historyclear='history -c && history -w && clear'
+> alias cleanorphans='sudo pacman -Qdtq | sudo ifne pacman -Rns -'
+> alias cleanpacman='sudo pacman -Scc && yay -Scc'
+
+# current: order of events
+- commands ...
+- input: crypt password
+- input: re-enter crypt password
+- input: crypt password to decrypt
+- commands ...
+- input: root password
+- input: user password
+- commands ...
+- reboot
+
+# planned: order of events
+- ...
+- input: what to install
+- ...
+- output: what was installed
+- enter to reboot
+
+# problems
+- keyboard layout not set on sddm/plasma (login/de)
