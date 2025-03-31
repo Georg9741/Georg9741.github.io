@@ -3,6 +3,7 @@
 # Usage
 # --------
 # curl -O https://Georg9741.github.io/archinstall/install.sh
+# temp fix: sed -i -e 's/\r$//' install.sh
 # chmod +x install.sh
 # ./install.sh
 
