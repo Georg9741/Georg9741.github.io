@@ -45,6 +45,7 @@ clear
 echo
 echo "Partitioning..."
 echo
+wipefs -a /dev/sda*
 gdisk /dev/sda <<EOF
 o
 Y
