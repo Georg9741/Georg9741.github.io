@@ -246,9 +246,9 @@ systemctl enable sddm
 systemctl enable sshd
 localectl set-x11-keymap de
 EOF
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Enter chroot... finished"
