@@ -11,7 +11,7 @@
 - create '~/.bash_aliases':
 > alias miku='sudo'
 > alias aliases='sudo nano ~/.bash_aliases && . ~/.bash_aliases'
-> alias historyclear='history -c && history -w && clear'
+> alias clearhistory='history -c && history -w && clear'
 > alias cleanorphans='sudo pacman -Qdtq | sudo ifne pacman -Rns -'
 > alias cleanpacman='sudo pacman -Scc && yay -Scc'
 
