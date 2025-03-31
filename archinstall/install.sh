@@ -11,10 +11,39 @@
 # Exit on error
 set -e
 
+# Inputs
+clear # todo: shorten repetitive echo/clear commands
+while true; do
+  read -s -p "Enter crypt password: " CRYPTPASSWD
+  echo
+  read -s -p "Enter crypt password (again): " CRYPTPASSWD2
+  echo
+  [ "$CRYPTPASSWD" = "$CRYPTPASSWD2" ] && break
+  echo "Please try again"
+done
+while true; do
+  read -s -p "Enter root password:" ROOTPASSWD
+  echo
+  read -s -p "Enter root password (again): " ROOTPASSWD2
+  echo
+  [ "$ROOTPASSWD" = "$ROOTPASSWD2" ] && break
+  echo "Please try again"
+done
+while true; do
+  read -s -p "Enter user password:" USERPASSWD
+  echo
+  read -s -p "Enter user password (again): " USERPASSWD2
+  echo
+  [ "$USERPASSWD" = "$USERPASSWD2" ] && break
+  echo "Please try again"
+done
+# passwordhash=`openssl passwd -1 $password`
+
 # Partitioning
-echo ""
+clear
+echo
 echo "Partitioning..."
-echo ""
+echo
 gdisk /dev/sda <<EOF
 o
 Y
@@ -36,141 +65,161 @@ n
 w
 Y
 EOF
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Partitioning... finished"
+echo
 sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
 sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
 sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
 echo "EFI system partition ($sda1size MB)"
 echo "BIOS boot partition ($sda1size MB)"
 echo "Linux LUKS ($sda3size GB)"
+echo
 read -p "Press enter to continue"
 
 # Format partitions
-echo ""
+clear
+echo
 echo "Format partitions..."
-echo ""
+echo
 mkfs.fat -F32 /dev/sda1
 mkfs.ext4 /dev/sda2
-cryptsetup luksFormat /dev/sda3 # todo: loop, if re-enter password wrong; move input earlier in script and insert here
-cryptsetup open /dev/sda3 luks_lvm # todo: automatically insert password
-echo ""
+echo
+echo "Input crypt password here again"
+echo
+cryptsetup -q luksFormat /dev/sda3 # todo: automate: if output 'Proceed anyway?' input 'y'; $CRYPTPASSWD
+cryptsetup open /dev/sda3 luks_lvm <<EOF
+$CRYPTPASSWD
+EOF
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Format partitions... finished"
+echo
 echo "sda1: fat"
 echo "sda2: ext4"
 echo "sda3: luks"
+echo
 read -p "Press enter to continue"
 
 # LVM Setup
-echo ""
+clear
+echo
 echo "LVM Setup..."
-echo ""
+echo
 pvcreate /dev/mapper/luks_lvm
 vgcreate arch /dev/mapper/luks_lvm
 lvcreate arch -n swap -L 32GB -C y
 lvcreate arch -n root -L 64GB
 lvcreate arch -n home -l +100%FREE
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "LVM Setup... finished"
+echo
 echo "swap: 32 GB"
 echo "root: 64 GB"
 echo "home: 'todo: calculate +100%FREE' GB"
+echo
 read -p "Press enter to continue"
 
 # Format LVM partitions
-echo ""
+clear
+echo
 echo "Format LVM partitions..."
-echo ""
+echo
 mkswap /dev/mapper/arch-swap
 mkfs.ext4 /dev/mapper/arch-root -L root
 mkfs.ext4 /dev/mapper/arch-home -L home
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Format LVM partitions... finished"
+echo
 read -p "Press enter to continue"
 
 # Mount filesystems
-echo ""
+clear
+echo
 echo "Mount filesystems..."
-echo ""
+echo
 mount /dev/mapper/arch-root /mnt
 mount /dev/mapper/arch-home /mnt/home --mkdir
 mount /dev/sda2 /mnt/boot --mkdir
 mount /dev/sda1 /mnt/boot/efi --mkdir
 swapon /dev/mapper/arch-swap
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Mount filesystems... finished"
+echo
 read -p "Press enter to continue"
 
 # Generate mirror list
-echo ""
+clear
+echo
 echo "Generate mirror list..."
-echo ""
+echo
 reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Generate mirror list... finished"
+echo
 read -p "Press enter to continue"
 
 # Install base system
-echo ""
+clear
+echo
 echo "Install packages..."
-echo ""
+echo
 PACKAGES='base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober linux-zen linux-zen-headers intel-ucode plasma openssh kitty fastfetch mesa intel-media-driver'
 pacstrap -K /mnt $PACKAGES
 # Selection extra kernels: pacstrap -K /mnt linux-zen linux-zen-headers | pacstrap -K /mnt linux-lts linux-lts-headers
 # Selection microcode: pacstrap -K /mnt amd-ucode | pacstrap -K /mnt intel-ucode (lscpu, automatic with vendor id)
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Install packages... finished"
+echo
 read -p "Press enter to continue"
 
 # Generate fstab
-echo ""
+clear
+echo
 echo "Generate fstab..."
-echo ""
+echo
 genfstab -U /mnt >> /mnt/etc/fstab
-echo ""
+echo
 echo "...finished"
-echo ""
+echo
 
 clear
 echo "Generate fstab... finished"
+echo
 read -p "Press enter to continue"
 
 # Enter chroot
-echo ""
+clear
+echo
 echo "Enter chroot..."
-echo ""
-echo "Enter root password:"
-read -s PASSWD # todo: move earlier; maybe loop a re-enter
-echo "Enter user password:"
-read -s USERPASSWD # todo: move earlier; maybe loop a re-enter
+echo
 arch-chroot /mnt <<EOF
 ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
@@ -179,8 +228,8 @@ echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=de" > /etc/vconsole.conf
 echo "i-use-arch-btw" > /etc/hostname
 passwd
-$PASSWD
-$PASSWD
+$ROOTPASSWD
+$ROOTPASSWD
 useradd -m -G wheel georg
 passwd georg
 $USERPASSWD
@@ -210,6 +259,7 @@ echo "configured stuff"
 read -p "Press enter to continue"
 
 # Unmount and reboot
+clear
 umount -R /mnt
 swapoff -a
 clear
