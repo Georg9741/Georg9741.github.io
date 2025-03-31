@@ -6,7 +6,7 @@
 # chmod +x install.sh
 # ./install.sh
 
-# current criterias for this script to be functional: uefi mode, harddrive name sda, intel cpu, intel graphics
+# current criterias for this script to be functional: uefi mode, harddrive name: sda, cpu: intel, graphics: intel
 
 # Exit on error
 set -e
@@ -40,17 +40,34 @@ echo ""
 echo "...finished"
 echo ""
 
+clear
+echo "Partitioning... finished"
+sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
+sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
+sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
+echo "EFI system partition ($sda1size MB)"
+echo "BIOS boot partition ($sda1size MB)"
+echo "Linux LUKS ($sda3size GB)"
+read -p "Press enter to continue"
+
 # Format partitions
 echo ""
 echo "Format partitions..."
 echo ""
 mkfs.fat -F32 /dev/sda1
 mkfs.ext4 /dev/sda2
-cryptsetup luksFormat /dev/sda3 # loop this, till right
-cryptsetup open /dev/sda3 luks_lvm
+cryptsetup luksFormat /dev/sda3 # todo: loop, if re-enter password wrong; move input earlier in script and insert here
+cryptsetup open /dev/sda3 luks_lvm # todo: automatically insert password
 echo ""
 echo "...finished"
 echo ""
+
+clear
+echo "Format partitions... finished"
+echo "sda1: fat"
+echo "sda2: ext4"
+echo "sda3: luks"
+read -p "Press enter to continue"
 
 # LVM Setup
 echo ""
@@ -65,6 +82,13 @@ echo ""
 echo "...finished"
 echo ""
 
+clear
+echo "LVM Setup... finished"
+echo "swap: 32 GB"
+echo "root: 64 GB"
+echo "home: 'todo: calculate +100%FREE' GB"
+read -p "Press enter to continue"
+
 # Format LVM partitions
 echo ""
 echo "Format LVM partitions..."
@@ -75,6 +99,10 @@ mkfs.ext4 /dev/mapper/arch-home -L home
 echo ""
 echo "...finished"
 echo ""
+
+clear
+echo "Format LVM partitions... finished"
+read -p "Press enter to continue"
 
 # Mount filesystems
 echo ""
@@ -89,6 +117,10 @@ echo ""
 echo "...finished"
 echo ""
 
+clear
+echo "Mount filesystems... finished"
+read -p "Press enter to continue"
+
 # Generate mirror list
 echo ""
 echo "Generate mirror list..."
@@ -97,6 +129,10 @@ reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
 echo ""
 echo "...finished"
 echo ""
+
+clear
+echo "Generate mirror list... finished"
+read -p "Press enter to continue"
 
 # Install base system
 echo ""
@@ -110,6 +146,10 @@ echo ""
 echo "...finished"
 echo ""
 
+clear
+echo "Install packages... finished"
+read -p "Press enter to continue"
+
 # Generate fstab
 echo ""
 echo "Generate fstab..."
@@ -119,14 +159,18 @@ echo ""
 echo "...finished"
 echo ""
 
+clear
+echo "Generate fstab... finished"
+read -p "Press enter to continue"
+
 # Enter chroot
 echo ""
-echo "Generate fstab..."
+echo "Enter chroot..."
 echo ""
 echo "Enter root password:"
-read -s PASSWD
+read -s PASSWD # todo: move earlier; maybe loop a re-enter
 echo "Enter user password:"
-read -s USERPASSWD
+read -s USERPASSWD # todo: move earlier; maybe loop a re-enter
 arch-chroot /mnt <<EOF
 ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
@@ -152,8 +196,22 @@ systemctl enable sddm
 systemctl enable sshd
 localectl set-x11-keymap de
 EOF
+echo ""
+echo "...finished"
+echo ""
+
+clear
+echo "Enter chroot... finished"
+echo "root password set"
+echo "user georg created"
+echo "user added to group wheel"
+echo "installed stuff"
+echo "configured stuff"
+read -p "Press enter to continue"
 
 # Unmount and reboot
 umount -R /mnt
 swapoff -a
+clear
+read -p "Press enter to reboot"
 reboot
