@@ -35,3 +35,4 @@
 
 # problems
 - keyboard layout not set on sddm/plasma (login/de)
+- weirdly pinned kitty terminal on taskbar (try to fix or remove)
