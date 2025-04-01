@@ -31,7 +31,9 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Functions
-info() {echo -e "${GREEN}[INFO] $1${NC}"}
+info() {
+  echo -e "${GREEN}[INFO] $1${NC}"
+}
 
 # Menu
 #function showMenu () {
@@ -189,6 +191,7 @@ sleep 10
 clear
 
 # Result screen
+echo
 echo "[Partitioning]"
 sda1size=$(($(blockdev --getsize64 $EFI_PART)/1048576))
 sda2size=$(($(blockdev --getsize64 $BOOT_PART)/1048576))
