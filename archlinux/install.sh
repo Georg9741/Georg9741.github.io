@@ -6,15 +6,22 @@
 # chmod +x install.sh
 # ./install.sh
 
+function clearscreen () {
+  echo
+  echo
+  read -p "Press enter to continue"
+  clear
+}
+
+clear
+echo
 echo "current criterias for this script to be functional: uefi mode, harddrive name: sda, cpu: intel, graphics: intel"
+clearscreen
 
 # Exit on error
 set -e
 
 # Inputs
-echo
-read -p "Press enter to continue"
-clear # todo: shorten repetitive echo/clear commands
 while true; do
   read -s -p "Enter crypt password: " CRYPTPASSWD
   echo
@@ -40,11 +47,9 @@ while true; do
   echo "Please try again"
 done
 # passwordhash=`openssl passwd -1 $password`
+clearscreen
 
 # Partitioning
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Partitioning..."
 echo
@@ -73,10 +78,8 @@ EOF
 echo
 echo "...finished"
 echo
+clearscreen
 
-echo
-read -p "Press enter to continue"
-clear
 echo "Partitioning... finished"
 echo
 sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
@@ -85,11 +88,9 @@ sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
 echo "sda1: EFI system partition ($sda1size MB)"
 echo "sda2: BIOS boot partition ($sda2size MB)"
 echo "sda3: Linux LUKS ($sda3size GB)"
+clearscreen
 
 # Format partitions
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Format partitions..."
 echo
@@ -105,20 +106,16 @@ EOF
 echo
 echo "...finished"
 echo
+clearscreen
 
-echo
-read -p "Press enter to continue"
-clear
 echo "Format partitions... finished"
 echo
 echo "sda1: fat"
 echo "sda2: ext4"
 echo "sda3: luks"
+clearscreen
 
 # LVM Setup
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "LVM Setup..."
 echo
@@ -130,20 +127,16 @@ lvcreate arch -n home -l +100%FREE
 echo
 echo "...finished"
 echo
+clearscreen
 
-echo
-read -p "Press enter to continue"
-clear
 echo "LVM Setup... finished"
 echo
 echo "swap: 32 GB"
 echo "root: 64 GB"
 echo "home: 'todo: calculate +100%FREE' GB"
+clearscreen
 
 # Format LVM partitions
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Format LVM partitions..."
 echo
@@ -153,16 +146,9 @@ mkfs.ext4 /dev/mapper/arch-home -L home
 echo
 echo "...finished"
 echo
-
-echo
-read -p "Press enter to continue"
-clear
-echo "Format LVM partitions... finished"
+clearscreen
 
 # Mount filesystems
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Mount filesystems..."
 echo
@@ -174,16 +160,9 @@ swapon /dev/mapper/arch-swap
 echo
 echo "...finished"
 echo
-
-echo
-read -p "Press enter to continue"
-clear
-echo "Mount filesystems... finished"
+clearscreen
 
 # Generate mirror list
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Generate mirror list..."
 echo
@@ -191,18 +170,9 @@ reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
 echo
 echo "...finished"
 echo
-
-echo
-read -p "Press enter to continue"
-clear
-echo "Generate mirror list... finished"
-echo
-read -p "Press enter to continue"
+clearscreen
 
 # Install base system
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Install packages..."
 echo
@@ -213,16 +183,9 @@ pacstrap -K /mnt $PACKAGES
 echo
 echo "...finished"
 echo
-
-echo
-read -p "Press enter to continue"
-clear
-echo "Install packages... finished"
+clearscreen
 
 # Generate fstab
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Generate fstab..."
 echo
@@ -230,16 +193,9 @@ genfstab -U /mnt >> /mnt/etc/fstab
 echo
 echo "...finished"
 echo
-
-echo
-read -p "Press enter to continue"
-clear
-echo "Generate fstab... finished"
+clearscreen
 
 # Enter chroot
-echo
-read -p "Press enter to continue"
-clear
 echo
 echo "Enter chroot..."
 echo
@@ -271,21 +227,17 @@ EOF
 echo
 echo "...finished"
 echo
+clearscreen
 
-echo
-read -p "Press enter to continue"
-clear
 echo "Enter chroot... finished"
 echo "root password set"
 echo "user georg created"
 echo "user added to group wheel"
 echo "installed stuff"
 echo "configured stuff"
+clearscreen
 
 # Unmount and reboot
-echo
-read -p "Press enter to continue"
-clear
 umount -R /mnt
 swapoff -a
 clear
