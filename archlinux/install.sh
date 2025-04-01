@@ -18,6 +18,26 @@ echo
 echo "current criterias for this script to be functional: uefi mode, harddrive name: sda, cpu: intel, graphics: intel"
 clearscreen
 
+# Menu
+#function showMenu () {
+#        echo "1) Set crypt password"
+#        echo "2) Set root password"
+#        echo "3) Set user password"
+#        echo "4) Quit"
+#}
+#while [ 1 ]
+#  do
+#    showMenu
+#    read CHOICE
+#    case "$CHOICE" in
+#      "1") ...
+#      "2") ...
+#      "3") ...
+#      "4") exit 1
+#      ;;
+#    esac
+#done
+
 # Exit on error
 set -e
 
@@ -47,7 +67,6 @@ while true; do
   echo "Please try again"
 done
 # passwordhash=`openssl passwd -1 $password`
-clearscreen
 
 # Partitioning
 echo
@@ -78,17 +97,6 @@ EOF
 echo
 echo "...finished"
 echo
-clearscreen
-
-echo "Partitioning... finished"
-echo
-sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
-sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
-sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
-echo "sda1: EFI system partition ($sda1size MB)"
-echo "sda2: BIOS boot partition ($sda2size MB)"
-echo "sda3: Linux LUKS ($sda3size GB)"
-clearscreen
 
 # Format partitions
 echo
@@ -105,14 +113,6 @@ EOF
 echo
 echo "...finished"
 echo
-clearscreen
-
-echo "Format partitions... finished"
-echo
-echo "sda1: fat"
-echo "sda2: ext4"
-echo "sda3: luks"
-clearscreen
 
 # LVM Setup
 echo
@@ -126,14 +126,6 @@ lvcreate arch -n home -l +100%FREE
 echo
 echo "...finished"
 echo
-clearscreen
-
-echo "LVM Setup... finished"
-echo
-echo "swap: 32 GB"
-echo "root: 64 GB"
-echo "home: 'todo: calculate +100%FREE' GB"
-clearscreen
 
 # Format LVM partitions
 echo
@@ -145,7 +137,6 @@ mkfs.ext4 /dev/mapper/arch-home -L home
 echo
 echo "...finished"
 echo
-clearscreen
 
 # Mount filesystems
 echo
@@ -159,7 +150,6 @@ swapon /dev/mapper/arch-swap
 echo
 echo "...finished"
 echo
-clearscreen
 
 # Generate mirror list
 echo
@@ -169,7 +159,6 @@ reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
 echo
 echo "...finished"
 echo
-clearscreen
 
 # Install base system
 echo
@@ -182,7 +171,6 @@ pacstrap -K /mnt $PACKAGES
 echo
 echo "...finished"
 echo
-clearscreen
 
 # Generate fstab
 echo
@@ -192,7 +180,6 @@ genfstab -U /mnt >> /mnt/etc/fstab
 echo
 echo "...finished"
 echo
-clearscreen
 
 # Enter chroot
 echo
@@ -228,13 +215,38 @@ echo "...finished"
 echo
 clearscreen
 
-echo "Enter chroot... finished"
+
+echo
+echo "Partitioning"
+echo
+sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
+sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
+sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
+echo "sda1: EFI system partition ($sda1size MB)"
+echo "sda2: BIOS boot partition ($sda2size MB)"
+echo "sda3: Linux LUKS ($sda3size GB)"
+echo
+echo "Format partitions"
+echo
+echo "sda1: fat"
+echo "sda2: ext4"
+echo "sda3: luks"
+echo
+echo "LVM Setup"
+echo
+echo "swap: 32 GB"
+echo "root: 64 GB"
+echo "home: 'todo: calculate +100%FREE' GB"
+echo
+echo "Enter chroot"
+echo
 echo "root password set"
 echo "user georg created"
 echo "user added to group wheel"
 echo "installed stuff"
 echo "configured stuff"
 clearscreen
+
 
 # Unmount and reboot
 umount -R /mnt
