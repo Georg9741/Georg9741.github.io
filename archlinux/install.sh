@@ -96,9 +96,6 @@ echo "Format partitions..."
 echo
 mkfs.fat -F32 /dev/sda1
 mkfs.ext4 /dev/sda2
-echo
-echo "Input crypt password here again"
-echo
 cryptsetup -q luksFormat /dev/sda3 <<EOF
 $CRYPTPASSWD
 EOF
