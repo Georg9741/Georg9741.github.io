@@ -58,29 +58,29 @@ info() {
 # Inputs
 echo
 while true; do
-  echo "Enter crypt password:"
-  read -s CRYPT_PASSWD
-  echo "Enter crypt password (again):"
-  read -s CRYPT_PASSWD2
-  ["$CRYPT_PASSWD" = "$CRYPT_PASSWD2"] && break
+  read -s -p "Enter crypt password: " CRYPT_PASSWD
+  echo; echo
+  read -s -p "Enter crypt password (again): " CRYPT_PASSWD2
+  [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
+  echo; echo
   echo "Passwords do not match. Try again."
 done
 clear
 while true; do
-  echo "Enter root password:"
-  read -s ROOT_PASSWD
-  echo "Enter root password (again):"
-  read -s ROOT_PASSWD2
-  ["$ROOT_PASSWD" = "$ROOT_PASSWD2"] && break
+  read -s -p "Enter root password: " ROOT_PASSWD
+  echo; echo
+  read -s -p "Enter root password (again): " ROOT_PASSWD2
+  [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
+  echo; echo
   echo "Passwords do not match. Try again."
 done
 clear
 while true; do
-  echo "Enter user password:"
-  read -s USER_PASSWD
-  echo "Enter user password (again):"
-  read -s USER_PASSWD2
-  ["$USER_PASSWD" = "$USER_PASSWD2"] && break
+  read -s -p "Enter user password: " USER_PASSWD
+  echo; echo
+  read -s -p "Enter user password (again): " USER_PASSWD2
+  [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
+  echo; echo
   echo "Passwords do not match. Try again."
 done
 
