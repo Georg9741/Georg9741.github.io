@@ -158,9 +158,9 @@ echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=de" > /etc/vconsole.conf
 localectl set-x11-keymap de
 echo "i-use-arch-btw" > /etc/hostname
-echo -e "$ROOTPASSWD\n$ROOTPASSWD" | passwd
 useradd -m -G wheel georg
-echo -e "$USERPASSWD\n$USERPASSWD" | passwd georg
+echo "root:$ROOTPASSWD" | chpasswd
+echo "georg:$USERPASSWD" | chpasswd
 sed -i "s/^# Cmnd_Alias\tREBOOT =.*/Cmnd_Alias\tREBOOT = \/sbin\/halt, \/sbin\/reboot, \/sbin\/poweroff, \/sbin\/shutdown/;s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT/" /etc/sudoers
 sed -i "s/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/" /etc/mkinitcpio.conf
 mkinitcpio -P
