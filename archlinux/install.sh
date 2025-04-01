@@ -122,10 +122,19 @@ info "Partitions formatted"
 
 # LVM Setup
 echo
+RAM_SIZE=$(grep MemTotal /proc/meminfo | awk '{print $2}') # in KB
+SWAP_SIZE=$(( RAM_SIZE / 1024 / 1024 )) # Convert to GB
+
+if [ $SWAP_SIZE -lt 8 ]; then
+  SWAP_SIZE=8  # Set a minimum swap of 8GB
+elif [ $SWAP_SIZE -gt 32 ]; then
+  SWAP_SIZE=32 # Cap swap at 32GB
+fi
+
 info "LVM Setup"
 pvcreate /dev/mapper/$LUKS_NAME
 vgcreate $VG_NAME /dev/mapper/$LUKS_NAME
-lvcreate $VG_NAME -n swap -L 32GB -C y
+lvcreate $VG_NAME -n swap -L "${SWAP_SIZE}G" -C y
 lvcreate $VG_NAME -n root -L 64GB
 lvcreate $VG_NAME -n home -l +100%FREE
 info "LVM Setup finished"
