@@ -151,31 +151,25 @@ echo "[fstab generated]"
 
 # Enter chroot
 echo "[Enter chroot]"
-arch-chroot /mnt <<EOF
-ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
-sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
+arch-chroot /mnt /bin/bash -c 'ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+sed -i "s/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
 locale-gen
 echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=de" > /etc/vconsole.conf
 localectl set-x11-keymap de
 echo "i-use-arch-btw" > /etc/hostname
-passwd
-$ROOTPASSWD
-$ROOTPASSWD
+echo -e "$ROOTPASSWD\n$ROOTPASSWD" | passwd
 useradd -m -G wheel georg
-passwd georg
-$USERPASSWD
-$USERPASSWD
-sed -i 's/^# Cmnd_Alias\tREBOOT =.*/Cmnd_Alias\tREBOOT = \/sbin\/halt, \/sbin\/reboot, \/sbin\/poweroff, \/sbin\/shutdown/;s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT/' /etc/sudoers
-sed -i 's/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/' /etc/mkinitcpio.conf
+echo -e "$USERPASSWD\n$USERPASSWD" | passwd georg
+sed -i "s/^# Cmnd_Alias\tREBOOT =.*/Cmnd_Alias\tREBOOT = \/sbin\/halt, \/sbin\/reboot, \/sbin\/poweroff, \/sbin\/shutdown/;s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT/" /etc/sudoers
+sed -i "s/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/" /etc/mkinitcpio.conf
 mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 root=\/dev\/mapper\/arch-root cryptdevice=\/dev\/sda3:luks_lvm quiet"/' /etc/default/grub
+sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 root=\/dev\/mapper\/arch-root cryptdevice=\/dev\/sda3:luks_lvm quiet\"/" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
-systemctl enable sshd
-EOF
+systemctl enable sshd'
 echo "[Exit chroot]"
 clearscreen
 
