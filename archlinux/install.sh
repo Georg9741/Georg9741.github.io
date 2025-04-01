@@ -204,6 +204,7 @@ sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8
 locale-gen
 echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=de" > /etc/vconsole.conf
+localectl set-x11-keymap de
 echo "i-use-arch-btw" > /etc/hostname
 passwd
 $ROOTPASSWD
@@ -221,7 +222,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
 systemctl enable sshd
-localectl set-x11-keymap de
 EOF
 echo
 echo "...finished"
