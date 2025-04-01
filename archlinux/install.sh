@@ -58,23 +58,29 @@ info() {
 # Inputs
 echo
 while true; do
-  read -s -p "Enter crypt password: " CRYPTPASSWD
-  read -s -p "Enter crypt password (again): " CRYPTPASSWD2
-  ["$CRYPTPASSWD" = "$CRYPTPASSWD2"] && break
+  echo "Enter crypt password:"
+  read -s CRYPT_PASSWD
+  echo "Enter crypt password (again):"
+  read -s CRYPT_PASSWD2
+  ["$CRYPT_PASSWD" = "$CRYPT_PASSWD2"] && break
   echo "Passwords do not match. Try again."
 done
 clear
 while true; do
-  read -s -p "Enter root password:" ROOTPASSWD
-  read -s -p "Enter root password (again): " ROOTPASSWD2
-  ["$ROOTPASSWD" = "$ROOTPASSWD2"] && break
+  echo "Enter root password:"
+  read -s ROOT_PASSWD
+  echo "Enter root password (again):"
+  read -s ROOT_PASSWD2
+  ["$ROOT_PASSWD" = "$ROOT_PASSWD2"] && break
   echo "Passwords do not match. Try again."
 done
 clear
 while true; do
-  read -s -p "Enter user password:" USERPASSWD
-  read -s -p "Enter user password (again): " USERPASSWD2
-  ["$USERPASSWD" = "$USERPASSWD2"] && break
+  echo "Enter user password:"
+  read -s USER_PASSWD
+  echo "Enter user password (again):"
+  read -s USER_PASSWD2
+  ["$USER_PASSWD" = "$USER_PASSWD2"] && break
   echo "Passwords do not match. Try again."
 done
 
@@ -110,8 +116,8 @@ echo
 info "Format partitions"
 mkfs.fat -F32 $EFI_PART
 mkfs.ext4 $BOOT_PART
-echo -n "$CRYPTPASSWD" | cryptsetup -q luksFormat $LUKS_PART
-echo -n "$CRYPTPASSWD" | cryptsetup open $LUKS_PART $LUKS_NAME
+echo -n "$CRYPT_PASSWD" | cryptsetup -q luksFormat $LUKS_PART
+echo -n "$CRYPT_PASSWD" | cryptsetup open $LUKS_PART $LUKS_NAME
 info "Partitions formatted"
 
 # LVM Setup
@@ -174,8 +180,8 @@ echo "KEYMAP=de" > /etc/vconsole.conf
 localectl set-x11-keymap de
 echo "i-use-arch-btw" > /etc/hostname
 useradd -m -G wheel georg
-echo "root:$ROOTPASSWD" | chpasswd
-echo "georg:$USERPASSWD" | chpasswd
+echo "root:'"$ROOT_PASSWD"'" | chpasswd
+echo "georg:'"$USER_PASSWD"'" | chpasswd
 sed -i "s/^# Cmnd_Alias\tREBOOT =.*/Cmnd_Alias\tREBOOT = \/sbin\/halt, \/sbin\/reboot, \/sbin\/poweroff, \/sbin\/shutdown/;s/# %wheel ALL=(ALL:ALL) ALL/%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT/" /etc/sudoers
 sed -i "s/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/" /etc/mkinitcpio.conf
 mkinitcpio -P
