@@ -186,7 +186,6 @@ sed -i "s/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8
 locale-gen
 echo "LANG=en_GB.UTF-8" > /etc/locale.conf
 echo "KEYMAP=de" > /etc/vconsole.conf
-localectl set-x11-keymap de
 echo "i-use-arch-btw" > /etc/hostname
 useradd -m -G wheel georg
 echo "root:'$ROOT_PASSWD'" | chpasswd
@@ -200,6 +199,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
 systemctl enable sshd'
+echo -e 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "de"\nEndSection' > /mnt/etc/X11/xorg.conf.d/00-keyboard.conf
 info "Exit chroot"
 echo "Continuing in 10 seconds..."
 sleep 10
