@@ -99,7 +99,9 @@ mkfs.ext4 /dev/sda2
 echo
 echo "Input crypt password here again"
 echo
-cryptsetup -q luksFormat /dev/sda3 # todo: automate: if output 'Proceed anyway?' input 'y'; $CRYPTPASSWD
+cryptsetup -q luksFormat /dev/sda3 <<EOF
+$CRYPTPASSWD
+EOF
 cryptsetup open /dev/sda3 luks_lvm <<EOF
 $CRYPTPASSWD
 EOF
