@@ -6,17 +6,32 @@
 # chmod +x install.sh
 # ./install.sh
 
-function clearscreen () {
-  echo
-  echo
-  read -p "Press enter to continue"
-  clear
-}
-
 clear
+
+# Temporary
 echo
 echo "current criterias for this script to be functional: uefi mode, harddrive name: sda, cpu: intel, graphics: intel"
-clearscreen
+echo
+read -p "Press enter to continue"
+clear
+
+# Exit on error
+set -euo pipefail
+
+# Variabled
+DISK="/dev/sda"
+EFI_PART="${DISK}1"
+BOOT_PART="${DISK}2"
+LUKS_PART="${DISK}3"
+LUKS_NAME="luks_lvm"
+VG_NAME="arch"
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+# Functions
+info() {echo -e "${GREEN}[INFO] $1${NC}"}
 
 # Menu
 #function showMenu () {
@@ -38,40 +53,34 @@ clearscreen
 #    esac
 #done
 
-# Exit on error
-set -e
-
 # Inputs
+echo
 while true; do
   read -s -p "Enter crypt password: " CRYPTPASSWD
-  echo
   read -s -p "Enter crypt password (again): " CRYPTPASSWD2
-  echo
-  [ "$CRYPTPASSWD" = "$CRYPTPASSWD2" ] && break
-  echo "Please try again"
+  ["$CRYPTPASSWD" = "$CRYPTPASSWD2"] && break
+  echo "Passwords do not match. Try again."
 done
+clear
 while true; do
   read -s -p "Enter root password:" ROOTPASSWD
-  echo
   read -s -p "Enter root password (again): " ROOTPASSWD2
-  echo
-  [ "$ROOTPASSWD" = "$ROOTPASSWD2" ] && break
-  echo "Please try again"
+  ["$ROOTPASSWD" = "$ROOTPASSWD2"] && break
+  echo "Passwords do not match. Try again."
 done
+clear
 while true; do
   read -s -p "Enter user password:" USERPASSWD
-  echo
   read -s -p "Enter user password (again): " USERPASSWD2
-  echo
-  [ "$USERPASSWD" = "$USERPASSWD2" ] && break
-  echo "Please try again"
+  ["$USERPASSWD" = "$USERPASSWD2"] && break
+  echo "Passwords do not match. Try again."
 done
-# passwordhash=`openssl passwd -1 $password`
 
 # Partitioning
-echo "[Partitioning]"
-wipefs -a /dev/sda*
-gdisk /dev/sda <<EOF
+echo
+info "Partitioning"
+wipefs -a $DISK*
+gdisk $DISK <<EOF
 o
 Y
 n
@@ -92,65 +101,69 @@ n
 w
 Y
 EOF
-echo "[Partitioning finished]"
+info "Partitioning finished"
 
 # Format partitions
-echo "[Format partitions]"
-mkfs.fat -F32 /dev/sda1
-mkfs.ext4 /dev/sda2
-cryptsetup -q luksFormat /dev/sda3 <<EOF
-$CRYPTPASSWD
-EOF
-cryptsetup open /dev/sda3 luks_lvm <<EOF
-$CRYPTPASSWD
-EOF
-echo "[Partitions formatted]"
+echo
+info "Format partitions"
+mkfs.fat -F32 $EFI_PART
+mkfs.ext4 $BOOT_PART
+echo -n "$CRYPTPASSWD" | cryptsetup -q luksFormat $LUKS_PART
+echo -n "$CRYPTPASSWD" | cryptsetup open $LUKS_PART $LUKS_NAME
+info "Partitions formatted"
 
 # LVM Setup
-echo "[LVM Setup]"
-pvcreate /dev/mapper/luks_lvm
-vgcreate arch /dev/mapper/luks_lvm
-lvcreate arch -n swap -L 32GB -C y
-lvcreate arch -n root -L 64GB
-lvcreate arch -n home -l +100%FREE
-echo "[LVM Setup finished]"
+echo
+info "LVM Setup"
+pvcreate /dev/mapper/$LUKS_NAME
+vgcreate $VG_NAME /dev/mapper/$LUKS_NAME
+lvcreate $VG_NAME -n swap -L 32GB -C y
+lvcreate $VG_NAME -n root -L 64GB
+lvcreate $VG_NAME -n home -l +100%FREE
+info "LVM Setup finished"
 
 # Format LVM partitions
-echo "[Format LVM partitions]"
-mkswap /dev/mapper/arch-swap
-mkfs.ext4 /dev/mapper/arch-root -L root
-mkfs.ext4 /dev/mapper/arch-home -L home
-echo "[LVM partitions formatted]"
+echo
+info "Format LVM partitions"
+mkswap /dev/mapper/${VG_NAME}-swap
+mkfs.ext4 /dev/mapper/${VG_NAME}-root -L root
+mkfs.ext4 /dev/mapper/${VG_NAME}-home -L home
+info "LVM partitions formatted"
 
 # Mount filesystems
-echo "[Mount filesystems]"
-mount /dev/mapper/arch-root /mnt
-mount /dev/mapper/arch-home /mnt/home --mkdir
-mount /dev/sda2 /mnt/boot --mkdir
-mount /dev/sda1 /mnt/boot/efi --mkdir
-swapon /dev/mapper/arch-swap
-echo "[Filesystems mounted]"
+echo
+info "Mount filesystems"
+mount /dev/mapper/${VG_NAME}-root /mnt
+mount /dev/mapper/${VG_NAME}-home /mnt/home --mkdir
+mount $BOOT_PART /mnt/boot --mkdir
+mount $EFI_PART /mnt/boot/efi --mkdir
+swapon /dev/mapper/${VG_NAME}-swap
+info "Filesystems mounted"
 
 # Generate mirror list
-echo "[Generate mirror list]"
+echo
+info "Generate mirror list"
 reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
-echo "[Mirror list generated]"
+info "Mirror list generated"
 
 # Install base system
-echo "[Install packages]"
+echo
+info "Install packages"
 PACKAGES='base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober linux-zen linux-zen-headers intel-ucode plasma openssh kitty fastfetch mesa intel-media-driver'
 pacstrap -K /mnt $PACKAGES
 # Selection extra kernels: pacstrap -K /mnt linux-zen linux-zen-headers | pacstrap -K /mnt linux-lts linux-lts-headers
 # Selection microcode: pacstrap -K /mnt amd-ucode | pacstrap -K /mnt intel-ucode (lscpu, automatic with vendor id)
-echo "[Packages installed]"
+info "Packages installed"
 
 # Generate fstab
-echo "[Generate fstab]"
+echo
+info "Generate fstab"
 genfstab -U /mnt >> /mnt/etc/fstab
-echo "[fstab generated]"
+info "fstab generated"
 
 # Enter chroot
-echo "[Enter chroot]"
+echo
+info "Enter chroot"
 arch-chroot /mnt /bin/bash -c 'ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 sed -i "s/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
 locale-gen
@@ -165,21 +178,24 @@ sed -i "s/^# Cmnd_Alias\tREBOOT =.*/Cmnd_Alias\tREBOOT = \/sbin\/halt, \/sbin\/r
 sed -i "s/^HOOKS=.*/HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)/" /etc/mkinitcpio.conf
 mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-sed -i "s/^GRUB_CMDLINE_LINUX_DEFAULT=.*/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 root=\/dev\/mapper\/arch-root cryptdevice=\/dev\/sda3:luks_lvm quiet\"/" /etc/default/grub
+sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 root=/dev/mapper/'"$VG_NAME"'-root cryptdevice='"$LUKS_PART"':'"$LUKS_NAME"'" quiet"|g" /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
 systemctl enable sshd'
-echo "[Exit chroot]"
-clearscreen
+info "Exit chroot"
+echo "Continuing in 10 seconds..."
+sleep 10
+clear
 
+# Result screen
 echo "[Partitioning]"
-sda1size=$(($(blockdev --getsize64 /dev/sda1)/1048576))
-sda2size=$(($(blockdev --getsize64 /dev/sda2)/1048576))
-sda3size=$(($(blockdev --getsize64 /dev/sda3)/1073741824))
-echo "sda1: EFI system partition ($sda1size MB)"
-echo "sda2: BIOS boot partition ($sda2size MB)"
-echo "sda3: Linux LUKS ($sda3size GB)"
+sda1size=$(($(blockdev --getsize64 $EFI_PART)/1048576))
+sda2size=$(($(blockdev --getsize64 $BOOT_PART)/1048576))
+sda3size=$(($(blockdev --getsize64 $LUKS_PART)/1073741824))
+echo "sda1: EFI system partition (${sda1size}MB)"
+echo "sda2: BIOS boot partition (${sda2size}MB)"
+echo "sda3: Linux LUKS (${sda3size}GB)"
 echo
 echo "[Partitions formatted]"
 echo "sda1: fat"
@@ -187,9 +203,10 @@ echo "sda2: ext4"
 echo "sda3: luks"
 echo
 echo "[LVM Setup]"
-echo "swap: 32 GB"
-echo "root: 64 GB"
-echo "home: 'todo: calculate +100%FREE' GB"
+sdahomesize=$(($(blockdev --getsize64 $DISK)/1073741824-100663296))
+echo "swap: 32GB"
+echo "root: 64GB"
+echo "home: ${sdahomesize}GB"
 echo
 echo "[Chroot]"
 echo "root password set"
@@ -197,8 +214,9 @@ echo "user georg created"
 echo "user added to group wheel"
 echo "installed stuff"
 echo "configured stuff"
-clearscreen
-
+echo "Continuing in 10 seconds..."
+sleep 10
+clear
 
 # Unmount and reboot
 umount -R /mnt
