@@ -52,6 +52,8 @@ HOME_LV="home"
 # Password Inputs
 password_input() {
   MISMATCH=0
+  VAR=$4
+  VAR2=${4}2
   while true; do
     clear; echo; echo "[$1]"; echo
     if [ $MISMATCH = 1 ]; then
@@ -60,13 +62,15 @@ password_input() {
     read -s -p "Enter $2: " $4
     clear; echo; echo "[$1]"; echo
     read -s -p "Verify $3: " ${4}2
-    [ "${$4}" = "${${4}2}" ] && break
+    [ "$VAR" = "$VAR2" ] && break
     MISMATCH=1
   done
 }
 password_input "USER PASSWORD" "user password for $USERNAME" "user password" "USER_PASSWD"
 password_input "ROOT PASSWORD" "root password" "root password" "ROOT_PASSWD"
 password_input "CRYPTSETUP" "passphrase for ${LUKS_PART}" "passphrase" "CRYPT_PASSWD"
+echo "$USER_PASSWD" # testing
+sleep 30 # testing
 ## USER PASSWORD
 #MISMATCH=0
 #while true; do
