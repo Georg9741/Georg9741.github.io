@@ -31,7 +31,8 @@ echo; echo "[SET DRIVE]"; echo
 lsblk; echo
 read -p "Enter drive name here: " DISK_NAME
 ## USERNAME
-clear; echo "[SET USERNAME]"; echo
+clear
+echo; echo "[SET USERNAME]"; echo
 read -p "Enter username here: " USERNAME
 ## USER PASSWORD
 while true; do
