@@ -38,9 +38,9 @@ read -p "Enter username here: " USERNAME
 # Variables
 DISK="/dev/${DISK_NAME}"
 EFI_PART="${DISK}1"
-EFI_SIZE="256M" # not implemented yet
+EFI_SIZE="256M"
 BOOT_PART="${DISK}2"
-BOOT_SIZE="512M" # not implemented yet
+BOOT_SIZE="512M"
 LUKS_PART="${DISK}3"
 LUKS_NAME="luks_lvm"
 VG_NAME="arch"
@@ -69,27 +69,7 @@ password_input "CRYPTSETUP" "passphrase for $LUKS_PART" "passphrase" CRYPT_PASSW
 # Partitioning
 clear
 info "Partitioning"
-gdisk $DISK <<EOF
-o
-Y
-n
-
-
-+256M
-ef00
-n
-
-
-+512M
-ef02
-n
-
-
-
-8309
-w
-Y
-EOF
+echo -e "o\ny\nn\n\n\n+$EFI_SIZE\nef00\nn\n\n\n+$BOOT_SIZE\nef02\nn\n\n\n\n8309\nw\ny" | gdisk $DISK
 info "Partitioning finished"
 
 # Format partitions
@@ -160,14 +140,13 @@ echo 'LANG=en_GB.UTF-8' > /etc/locale.conf
 echo 'KEYMAP=de' > /etc/vconsole.conf
 echo -e 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "de"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf
 echo 'i-use-arch-btw' > /etc/hostname
-useradd -m -G wheel '$USERNAME'
-echo 'root:$ROOT_PASSWD' | chpasswd
-echo 'georg:$USER_PASSWD' | chpasswd
+useradd -m -G wheel $USERNAME
+echo -e 'root:"$ROOT_PASSWD"\n"$USERNAME":"$USER_PASSWD"' | chpasswd
 sed -i 's|^# Cmnd_Alias\tREBOOT =.*|Cmnd_Alias\tREBOOT = /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown|;s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT|' /etc/sudoers
 sed -i 's|^HOOKS=.*|HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)|' /etc/mkinitcpio.conf
 mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 root=/dev/mapper/$VG_NAME-$ROOT_LV cryptdevice=$LUKS_PART:$LUKS_NAME quiet"|' /etc/default/grub
+sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 root=/dev/mapper/'"$VG_NAME"'-'"$ROOT_LV"' cryptdevice='"$LUKS_PART"':'"$LUKS_NAME"' quiet"|' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
