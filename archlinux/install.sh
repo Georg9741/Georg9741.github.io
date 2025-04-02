@@ -102,7 +102,7 @@ info "Partitions formatted"
 
 # LVM Setup
 info "LVM Setup"
-RAM_SIZE=$(grep MemTotal /proc/meminfo | awk "{print $2}") # in KB
+RAM_SIZE=$(grep MemTotal /proc/meminfo | awk '{print $2}') # in KB
 SWAP_SIZE=$((RAM_SIZE/1024/1024)) # Convert to GB
 if [ $SWAP_SIZE -lt 8 ]; then
   SWAP_SIZE=8  # Set a minimum swap of 8GB
