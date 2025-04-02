@@ -76,7 +76,7 @@ password_input() {
     mismatch=1
   done
 }
-password_input "USER PASSWORD" "user password for ${USERNAME}" "user password" USER_PASSWD
+password_input "USER PASSWORD" "user password for $USERNAME" "user password" USER_PASSWD
 password_input "ROOT PASSWORD" "root password" "root password" ROOT_PASSWD
 password_input "CRYPTSETUP" "passphrase for $LUKS_PART" "passphrase" CRYPT_PASSWD
 ### testing
