@@ -51,13 +51,13 @@ HOME_LV="home"
 
 # Password Inputs
 password_input() {
-  local mismatch=0 title=$1 input_msg1=$2 input_msg2=$3 varname=$4 pass1 pass2
+  local mismatch=0 title=$1 read_msg1=$2 read_msg2=$3 varname=$4 pass1 pass2
   while true; do
     clear; echo; echo "[$title]"; echo
     if (( mismatch )); then echo "Passwords do not match. Try again."; echo; fi
-    read -s -p "Enter $input_msg1: " pass1
-    clear; echo; echo "[$title_msg]"; echo
-    read -s -p "Verify $input_msg2: " pass2
+    read -s -p "Enter $read_msg1: " pass1
+    clear; echo; echo "[$title]"; echo
+    read -s -p "Verify $read_msg2: " pass2
     [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
     mismatch=1
   done
