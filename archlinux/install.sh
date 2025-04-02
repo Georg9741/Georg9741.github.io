@@ -138,7 +138,7 @@ sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8
 locale-gen
 echo 'LANG=en_GB.UTF-8' > /etc/locale.conf
 echo 'KEYMAP=de' > /etc/vconsole.conf
-echo -e 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "de"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf
+echo -e 'Section \"InputClass\"\n    Identifier \"system-keyboard\"\n    MatchIsKeyboard \"on\"\n    Option \"XkbLayout\" \"de\"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf
 echo 'i-use-arch-btw' > /etc/hostname
 useradd -m -G wheel $USERNAME
 echo -e 'root:"$ROOT_PASSWD"\n"$USERNAME":"$USER_PASSWD"' | chpasswd
