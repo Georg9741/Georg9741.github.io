@@ -124,7 +124,7 @@ info "Partitions formatted"
 info "LVM Setup"
 RAM_SIZE=$(grep MemTotal /proc/meminfo | awk '{print $2}') # in KB
 SWAP_SIZE=$((RAM_SIZE/1024/1024)) # Convert to GB
-[ $SWAP_SIZE -lt 8 ]; then
+if [ $SWAP_SIZE -lt 8 ]; then
   SWAP_SIZE=8  # Set a minimum swap of 8GB
 elif [ $SWAP_SIZE -gt 32 ]; then
   SWAP_SIZE=32 # Cap swap at 32GB
