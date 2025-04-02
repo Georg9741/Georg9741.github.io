@@ -10,9 +10,9 @@
 set -euo pipefail
 
 # Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+GREEN="\033[0;32m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
 
 # Functions
 info() {
@@ -51,25 +51,14 @@ HOME_LV="home"
 
 # Password Inputs
 password_input() {
-  local mismatch=0
-  local title_msg=$1
-  local input_msg1=$2
-  local input_msg2=$3
-  local varname=$4
-  local mismatch=0
-  local pass1 pass2
+  local mismatch=0 title=$1 input_msg1=$2 input_msg2=$3 varname=$4 pass1 pass2
   while true; do
-    clear; echo; echo "[$title_msg]"; echo
-    if [ $mismatch = 1 ]; then
-      echo "Passwords do not match. Try again."; echo
-    fi
+    clear; echo; echo "[$title]"; echo
+    if (( mismatch )); then echo "Passwords do not match. Try again."; echo; fi
     read -s -p "Enter $input_msg1: " pass1
     clear; echo; echo "[$title_msg]"; echo
     read -s -p "Verify $input_msg2: " pass2
-    if [ "$pass1" = "$pass2" ]; then
-      eval "$varname=\"$pass1\""  # Store the password in the given variable
-      break
-    fi
+    [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
     mismatch=1
   done
 }
@@ -113,7 +102,7 @@ info "Partitions formatted"
 
 # LVM Setup
 info "LVM Setup"
-RAM_SIZE=$(grep MemTotal /proc/meminfo | awk '{print $2}') # in KB
+RAM_SIZE=$(grep MemTotal /proc/meminfo | awk "{print $2}") # in KB
 SWAP_SIZE=$((RAM_SIZE/1024/1024)) # Convert to GB
 if [ $SWAP_SIZE -lt 8 ]; then
   SWAP_SIZE=8  # Set a minimum swap of 8GB
@@ -150,7 +139,7 @@ info "Mirror list generated"
 
 # Install base system
 info "Install packages"
-PACKAGES='base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober plasma openssh kitty fastfetch'
+PACKAGES="base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober plasma openssh kitty fastfetch"
 pacstrap -K /mnt $PACKAGES linux-zen linux-zen-headers intel-ucode mesa intel-media-driver
 # todo: Selection, extra kernels: linux-zen linux-zen-headers, linux-lts linux-lts-headers
 # todo: Selection, graphic drivers: mesa libva-mesa-driver, nvidia nvidia-utils nvidia-lts, mesa intel-media-driver
@@ -164,25 +153,25 @@ info "fstab generated"
 
 # Enter chroot
 info "Enter chroot"
-arch-chroot /mnt /bin/bash -c 'ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
-sed -i "s/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen
+arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
-echo "LANG=en_GB.UTF-8" > /etc/locale.conf
-echo "KEYMAP=de" > /etc/vconsole.conf
-echo "i-use-arch-btw" > /etc/hostname
+echo 'LANG=en_GB.UTF-8' > /etc/locale.conf
+echo 'KEYMAP=de' > /etc/vconsole.conf
+echo -e 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "de"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf
+echo 'i-use-arch-btw' > /etc/hostname
 useradd -m -G wheel '$USERNAME'
-echo "root:'$ROOT_PASSWD'" | chpasswd
-echo "georg:'$USER_PASSWD'" | chpasswd
-sed -i "s|^# Cmnd_Alias\tREBOOT =.*|Cmnd_Alias\tREBOOT = /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown|;s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT|" /etc/sudoers
-sed -i "s|^HOOKS=.*|HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)|" /etc/mkinitcpio.conf
+echo 'root:$ROOT_PASSWD' | chpasswd
+echo 'georg:$USER_PASSWD' | chpasswd
+sed -i 's|^# Cmnd_Alias\tREBOOT =.*|Cmnd_Alias\tREBOOT = /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown|;s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT|' /etc/sudoers
+sed -i 's|^HOOKS=.*|HOOKS=(base udev autodetect microcode modconf kms keyboard keymap consolefont block encrypt lvm2 filesystems fsck)|' /etc/mkinitcpio.conf
 mkinitcpio -P
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
-sed -i "s|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 root=/dev/mapper/'$VG_NAME'-'$ROOT_LV' cryptdevice='$LUKS_PART':'$LUKS_NAME' quiet\"|" /etc/default/grub
+sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 root=/dev/mapper/$VG_NAME-$ROOT_LV cryptdevice=$LUKS_PART:$LUKS_NAME quiet"|' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager
 systemctl enable sddm
-systemctl enable sshd'
-echo -e 'Section "InputClass"\n    Identifier "system-keyboard"\n    MatchIsKeyboard "on"\n    Option "XkbLayout" "de"\nEndSection' > /mnt/etc/X11/xorg.conf.d/00-keyboard.conf
+systemctl enable sshd"
 info "Exit chroot"
 
 # Result screen
