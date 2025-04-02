@@ -50,45 +50,77 @@ ROOT_LV_SIZE="64G"
 HOME_LV="home"
 
 # Password Inputs
+
+
 ## USER PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[USER PASSWORD]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter user password for ${USERNAME}: " USER_PASSWD
-  clear; echo; echo "[USER PASSWORD]"; echo
-  read -s -p "Verify user password: " USER_PASSWD2
-  [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
-  MISMATCH=1
-done
+password_input() {
+  local mismatch=0
+  local title_msg=$1
+  local input_msg1=$2
+  local input_msg2=$3
+  local varname=$4
+  local mismatch=0
+  local pass1 pass2
+  while true; do
+    clear; echo; echo "[$title_msg]"; echo
+    if [ $mismatch = 1 ]; then
+      echo "Passwords do not match. Try again."; echo
+    fi
+    read -s -p "Enter $input_msg1: " pass1
+    clear; echo; echo "[$title_msg]"; echo
+    read -s -p "Verify $input_msg2: " pass2
+    if [ "$pass1" = "$pass2" ]; then
+      eval "$varname=\"$pass1\""  # Store the password in the given variable
+      break
+    fi
+    mismatch=1
+  done
+}
+password_input "USER PASSWORD" "user password for ${USERNAME}" "user password" USER_PASSWD
+password_input "ROOT PASSWORD" "root password" "root password" ROOT_PASSWD
+password_input "CRYPTSETUP" "passphrase for $LUKS_PART" "passphrase" CRYPT_PASSWD
+### testing
+echo "$USER_PASSWD"
+sleep 45
+## USER PASSWORD
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[USER PASSWORD]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter user password for $USERNAME: " USER_PASSWD
+#  clear; echo; echo "[USER PASSWORD]"; echo
+#  read -s -p "Verify user password: " USER_PASSWD2
+#  [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 ## ROOT PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[ROOT PASSWORD]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter root password: " ROOT_PASSWD
-  clear; echo; echo "[ROOT PASSWORD]"; echo
-  read -s -p "Verify root password: " ROOT_PASSWD2
-  [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
-  MISMATCH=1
-done
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[ROOT PASSWORD]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter root password: " ROOT_PASSWD
+#  clear; echo; echo "[ROOT PASSWORD]"; echo
+#  read -s -p "Verify root password: " ROOT_PASSWD2
+#  [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 ## CRYPTSETUP PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[CRYPTSETUP]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter passphrase for ${LUKS_PART}: " CRYPT_PASSWD
-  clear; echo; echo "[CRYPTSETUP]"; echo
-  read -s -p "Verify passphrase: " CRYPT_PASSWD2
-  [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
-  MISMATCH=1
-done
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[CRYPTSETUP]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter passphrase for $LUKS_PART: " CRYPT_PASSWD
+#  clear; echo; echo "[CRYPTSETUP]"; echo
+#  read -s -p "Verify passphrase: " CRYPT_PASSWD2
+#  [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 
 # Partitioning
 clear
