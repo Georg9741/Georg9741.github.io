@@ -163,6 +163,7 @@ info "Installation complete!"
 #echo "sda3: Linux LUKS (${sda3size}GB)"
 echo; echo "System Summary:"
 lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT
+echo; read -p "Press enter to continue"
 
 # Unmount and reboot
 echo; echo "Rebooting in 10 seconds..."; sleep 10
