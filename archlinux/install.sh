@@ -9,6 +9,11 @@
 # Exit on error
 set -euo pipefail
 
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
 # Functions
 info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
@@ -19,11 +24,7 @@ clear
 echo; echo -e "${GREEN}Requirments: ${NC}UEFI Mode"
 echo; echo "Continuing in 5 seconds..."; sleep 5
 
-# Variables and Inputs
-## COLORS
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
+# Inputs
 ## DISK NAME
 clear
 echo; echo "[SET DRIVE]"; echo
@@ -33,6 +34,22 @@ read -p "Enter drive name here: " DISK_NAME
 clear
 echo; echo "[SET USERNAME]"; echo
 read -p "Enter username here: " USERNAME
+
+# Variables
+DISK="/dev/${DISK_NAME}"
+EFI_PART="${DISK}1"
+EFI_SIZE="256M" # not implemented yet
+BOOT_PART="${DISK}2"
+BOOT_SIZE="512M" # not implemented yet
+LUKS_PART="${DISK}3"
+LUKS_NAME="luks_lvm"
+VG_NAME="arch"
+SWAP_LV="swap"
+ROOT_LV="root"
+ROOT_LV_SIZE="64G"
+HOME_LV="home"
+
+# Password Inputs
 ## USER PASSWORD
 MISMATCH=0
 while true; do
@@ -59,19 +76,6 @@ while true; do
   [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
   MISMATCH=1
 done
-## VARIABLES
-DISK="/dev/${DISK_NAME}"
-EFI_PART="${DISK}1"
-EFI_SIZE="256M" # not implemented yet
-BOOT_PART="${DISK}2"
-BOOT_SIZE="512M" # not implemented yet
-LUKS_PART="${DISK}3"
-LUKS_NAME="luks_lvm"
-VG_NAME="arch"
-SWAP_LV="swap"
-ROOT_LV="root"
-ROOT_LV_SIZE="64G"
-HOME_LV="home"
 ## CRYPTSETUP PASSWORD
 MISMATCH=0
 while true; do
