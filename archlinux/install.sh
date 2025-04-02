@@ -27,7 +27,7 @@ echo; echo "Continuing in 5 seconds..."; sleep 5
 # Inputs
 ## DISK NAME
 clear
-echo "[SET DRIVE]"; echo
+echo; echo "[SET DRIVE]"; echo
 lsblk; echo
 read -p "Enter drive name here: " DISK_NAME
 ## USERNAME
@@ -36,12 +36,12 @@ read -p "Enter username here: " USERNAME
 ## USER PASSWORD
 while true; do
   MISMATCH=0
-  clear; echo "[USER PASSWORD]"; echo
+  clear; echo; echo "[USER PASSWORD]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
   fi
   read -s -p "Enter user password for ${USERNAME}: " USER_PASSWD
-  clear; echo "[USER PASSWORD]"; echo
+  clear; echo; echo "[USER PASSWORD]"; echo
   read -s -p "Verify user password: " USER_PASSWD2
   [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
   MISMATCH=1
@@ -49,12 +49,12 @@ done
 ## ROOT PASSWORD
 while true; do
   MISMATCH=0
-  clear; echo "[ROOT PASSWORD]"; echo
+  clear; echo; echo "[ROOT PASSWORD]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
   fi
   read -s -p "Enter root password: " ROOT_PASSWD
-  clear; echo "[ROOT PASSWORD]"; echo
+  clear; echo; echo "[ROOT PASSWORD]"; echo
   read -s -p "Verify root password: " ROOT_PASSWD2
   [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
   MISMATCH=1
@@ -62,12 +62,12 @@ done
 ## CRYPTSETUP PASSWORD
 while true; do
   MISMATCH=0
-  clear; echo "[CRYPTSETUP]"; echo
+  clear; echo; echo "[CRYPTSETUP]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
   fi
   read -s -p "Enter passphrase for ${LUKS_PART}: " CRYPT_PASSWD
-  clear; echo "[CRYPTSETUP]"; echo
+  clear; echo; echo "[CRYPTSETUP]"; echo
   read -s -p "Verify passphrase: " CRYPT_PASSWD2
   [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
   MISMATCH=1
