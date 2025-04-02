@@ -76,14 +76,16 @@ done
 # Variables
 DISK="/dev/${DISK_NAME}"
 EFI_PART="${DISK}1"
+EFI_SIZE="256M" # not implemented yet
 BOOT_PART="${DISK}2"
+BOOT_SIZE="512M" # not implemented yet
 LUKS_PART="${DISK}3"
 LUKS_NAME="luks_lvm"
 VG_NAME="arch"
 SWAP_LV="swap"
 ROOT_LV="root"
+ROOT_LV_SIZE="64G"
 HOME_LV="home"
-ROOT_LV_SIZE="64GB"
 
 # Partitioning
 clear
@@ -130,7 +132,7 @@ elif [ $SWAP_SIZE -gt 32 ]; then
 fi
 pvcreate /dev/mapper/$LUKS_NAME
 vgcreate $VG_NAME /dev/mapper/$LUKS_NAME
-lvcreate $VG_NAME -n $SWAP_LV -L ${SWAP_SIZE}GB -C y
+lvcreate $VG_NAME -n $SWAP_LV -L ${SWAP_SIZE}G -C y
 lvcreate $VG_NAME -n $ROOT_LV -L $ROOT_LV_SIZE
 lvcreate $VG_NAME -n $HOME_LV -l +100%FREE
 info "LVM Setup finished"
