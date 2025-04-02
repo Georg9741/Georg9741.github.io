@@ -22,7 +22,7 @@ info() {
 # Info
 clear
 echo; echo -e "${GREEN}Requirments: ${NC}UEFI Mode"
-echo; echo "Continuing in 5 seconds..."; sleep 5
+echo; echo "Continuing in 3 seconds..."; sleep 3
 
 # Inputs
 ## DISK NAME
@@ -50,45 +50,62 @@ ROOT_LV_SIZE="64G"
 HOME_LV="home"
 
 # Password Inputs
+password_input() {
+  MISMATCH=0
+  while true; do
+    clear; echo; echo "[$1]"; echo
+    if [ $MISMATCH = 1 ]; then
+      echo "Passwords do not match. Try again."; echo
+    fi
+    read -s -p "Enter $2: " $4
+    clear; echo; echo "[$1]"; echo
+    read -s -p "Verify $3: " ${4}2
+    [ "$4" = "${4}2" ] && break
+    MISMATCH=1
+  done
+}
+password_input "USER PASSWORD" "user password for $USERNAME" "user password" "USER_PASSWD"
+password_input "ROOT PASSWORD" "root password" "root password" "ROOT_PASSWD"
+password_input "CRYPTSETUP" "passphrase for ${LUKS_PART}" "passphrase" "CRYPT_PASSWD"
 ## USER PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[USER PASSWORD]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter user password for ${USERNAME}: " USER_PASSWD
-  clear; echo; echo "[USER PASSWORD]"; echo
-  read -s -p "Verify user password: " USER_PASSWD2
-  [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
-  MISMATCH=1
-done
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[USER PASSWORD]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter user password for ${USERNAME}: " USER_PASSWD
+#  clear; echo; echo "[USER PASSWORD]"; echo
+#  read -s -p "Verify user password: " USER_PASSWD2
+#  [ "$USER_PASSWD" = "$USER_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 ## ROOT PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[ROOT PASSWORD]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter root password: " ROOT_PASSWD
-  clear; echo; echo "[ROOT PASSWORD]"; echo
-  read -s -p "Verify root password: " ROOT_PASSWD2
-  [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
-  MISMATCH=1
-done
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[ROOT PASSWORD]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter root password: " ROOT_PASSWD
+#  clear; echo; echo "[ROOT PASSWORD]"; echo
+#  read -s -p "Verify root password: " ROOT_PASSWD2
+#  [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 ## CRYPTSETUP PASSWORD
-MISMATCH=0
-while true; do
-  clear; echo; echo "[CRYPTSETUP]"; echo
-  if [ $MISMATCH = 1 ]; then
-    echo "Passwords do not match. Try again."; echo
-  fi
-  read -s -p "Enter passphrase for ${LUKS_PART}: " CRYPT_PASSWD
-  clear; echo; echo "[CRYPTSETUP]"; echo
-  read -s -p "Verify passphrase: " CRYPT_PASSWD2
-  [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
-  MISMATCH=1
-done
+#MISMATCH=0
+#while true; do
+#  clear; echo; echo "[CRYPTSETUP]"; echo
+#  if [ $MISMATCH = 1 ]; then
+#    echo "Passwords do not match. Try again."; echo
+#  fi
+#  read -s -p "Enter passphrase for ${LUKS_PART}: " CRYPT_PASSWD
+#  clear; echo; echo "[CRYPTSETUP]"; echo
+#  read -s -p "Verify passphrase: " CRYPT_PASSWD2
+#  [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
+#  MISMATCH=1
+#done
 
 # Partitioning
 clear
