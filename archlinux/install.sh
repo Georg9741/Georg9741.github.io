@@ -35,8 +35,8 @@ clear
 echo; echo "[SET USERNAME]"; echo
 read -p "Enter username here: " USERNAME
 ## USER PASSWORD
+MISMATCH=0
 while true; do
-  MISMATCH=0
   clear; echo; echo "[USER PASSWORD]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
@@ -48,8 +48,8 @@ while true; do
   MISMATCH=1
 done
 ## ROOT PASSWORD
+MISMATCH=0
 while true; do
-  MISMATCH=0
   clear; echo; echo "[ROOT PASSWORD]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
@@ -61,8 +61,8 @@ while true; do
   MISMATCH=1
 done
 ## CRYPTSETUP PASSWORD
+MISMATCH=0
 while true; do
-  MISMATCH=0
   clear; echo; echo "[CRYPTSETUP]"; echo
   if [ $MISMATCH = 1 ]; then
     echo "Passwords do not match. Try again."; echo
