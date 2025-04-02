@@ -13,6 +13,7 @@
     > alias clearhistory='history -c && history -w && clear'
     > alias cleanorphans='sudo pacman -Qdtq | sudo ifne pacman -Rns -'
     > alias cleanpacman='sudo pacman -Scc && yay -Scc'
+- remove bios boot partition?
 
 # problems
 - weirdly pinned kitty terminal on taskbar (try to fix or remove)
