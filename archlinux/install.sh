@@ -60,7 +60,7 @@ password_input() {
     read -s -p "Enter $2: " $4
     clear; echo; echo "[$1]"; echo
     read -s -p "Verify $3: " ${4}2
-    [ "$4" = "${4}2" ] && break
+    [ "${$4}" = "${${4}2}" ] && break
     MISMATCH=1
   done
 }
