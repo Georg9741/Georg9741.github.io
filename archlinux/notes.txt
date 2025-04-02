@@ -1,36 +1,18 @@
 # to do
 - install yay/paru
+- cpu/gpu drivers automatic or manual selection
 - append to '~/.bashrc':
-> if [ -f ~/.bash_aliases ]; then
->     . ~/.bash_aliases
-> fi
->
-> fastfetch
+    > if [ -f ~/.bash_aliases ]; then
+    >     . ~/.bash_aliases
+    > fi
+    >
+    > fastfetch
 - create '~/.bash_aliases':
-> alias miku='sudo'
-> alias aliases='sudo nano ~/.bash_aliases && . ~/.bash_aliases'
-> alias clearhistory='history -c && history -w && clear'
-> alias cleanorphans='sudo pacman -Qdtq | sudo ifne pacman -Rns -'
-> alias cleanpacman='sudo pacman -Scc && yay -Scc'
-
-# current: order of events
-- commands ...
-- input: crypt password
-- input: re-enter crypt password
-- input: crypt password to decrypt
-- commands ...
-- input: root password
-- input: user password
-- commands ...
-- reboot
-
-# planned: order of events
-- ...
-- input: what to install
-- ...
-- output: what was installed
-- enter to reboot
+    > alias miku='sudo'
+    > alias aliases='sudo nano ~/.bash_aliases && . ~/.bash_aliases'
+    > alias clearhistory='history -c && history -w && clear'
+    > alias cleanorphans='sudo pacman -Qdtq | sudo ifne pacman -Rns -'
+    > alias cleanpacman='sudo pacman -Scc && yay -Scc'
 
 # problems
-- keyboard layout not set on sddm/plasma (login/de)
 - weirdly pinned kitty terminal on taskbar (try to fix or remove)
