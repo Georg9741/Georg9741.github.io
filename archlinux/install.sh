@@ -14,17 +14,16 @@ info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
 }
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-
 # Info
 clear
 echo; echo -e "${GREEN}Requirments: ${NC}UEFI Mode"
 echo; echo "Continuing in 5 seconds..."; sleep 5
 
-# Inputs
+# Variables and Inputs
+## COLORS
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 ## DISK NAME
 clear
 echo; echo "[SET DRIVE]"; echo
@@ -60,6 +59,19 @@ while true; do
   [ "$ROOT_PASSWD" = "$ROOT_PASSWD2" ] && break
   MISMATCH=1
 done
+## VARIABLES
+DISK="/dev/${DISK_NAME}"
+EFI_PART="${DISK}1"
+EFI_SIZE="256M" # not implemented yet
+BOOT_PART="${DISK}2"
+BOOT_SIZE="512M" # not implemented yet
+LUKS_PART="${DISK}3"
+LUKS_NAME="luks_lvm"
+VG_NAME="arch"
+SWAP_LV="swap"
+ROOT_LV="root"
+ROOT_LV_SIZE="64G"
+HOME_LV="home"
 ## CRYPTSETUP PASSWORD
 MISMATCH=0
 while true; do
@@ -73,20 +85,6 @@ while true; do
   [ "$CRYPT_PASSWD" = "$CRYPT_PASSWD2" ] && break
   MISMATCH=1
 done
-
-# Variables
-DISK="/dev/${DISK_NAME}"
-EFI_PART="${DISK}1"
-EFI_SIZE="256M" # not implemented yet
-BOOT_PART="${DISK}2"
-BOOT_SIZE="512M" # not implemented yet
-LUKS_PART="${DISK}3"
-LUKS_NAME="luks_lvm"
-VG_NAME="arch"
-SWAP_LV="swap"
-ROOT_LV="root"
-ROOT_LV_SIZE="64G"
-HOME_LV="home"
 
 # Partitioning
 clear
