@@ -21,7 +21,7 @@ NC='\033[0m' # No Color
 
 # Info
 clear
-echo; echo -e "${GREEN}Requirments: UEFI Mode"
+echo; echo -e "${GREEN}Requirments: ${NC}UEFI Mode"
 echo; echo "Continuing in 5 seconds..."; sleep 5
 
 # Inputs
