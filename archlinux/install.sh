@@ -15,6 +15,7 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 
 # Variables
+DISK_NAME=""
 DISK="/dev/${DISK_NAME}"
 
 EFI_PART="${DISK}1"
