@@ -115,7 +115,7 @@ input_username
 input_diskname
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
-input_password "PASSWORD FOR DISK ENCRYPTION (CRYPTSETUP)" "passphrase" CRYPT_PASSWD
+input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
 
 clear
 create_partitions
