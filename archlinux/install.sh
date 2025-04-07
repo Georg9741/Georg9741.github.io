@@ -164,6 +164,8 @@ mount_filesystems
   echo 'KEYMAP=de' > /etc/vconsole.conf
   echo -e 'Section \"InputClass\"\n    Identifier \"system-keyboard\"\n    MatchIsKeyboard \"on\"\n    Option \"XkbLayout\" \"de\"\nEndSection' > /etc/X11/xorg.conf.d/00-keyboard.conf
   echo 'i-use-arch-btw' > /etc/hostname
+  sddm --example-config > /etc/sddm.conf
+  sed -i 's/Current=/Current=breeze/' /etc/sddm.conf
   useradd -m -G wheel $USERNAME
   echo -e 'root:"$ROOT_PASSWD"\n"$USERNAME":"$USER_PASSWD"' | chpasswd
   sed -i 's|^# Cmnd_Alias\tREBOOT =.*|Cmnd_Alias\tREBOOT = /sbin/halt, /sbin/reboot, /sbin/poweroff, /sbin/shutdown|;s|# %wheel ALL=(ALL:ALL) ALL|%wheel ALL=(ALL:ALL) ALL, NOPASSWD: REBOOT|' /etc/sudoers
