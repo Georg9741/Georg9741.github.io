@@ -17,3 +17,4 @@
 
 # problems
 - weirdly pinned kitty terminal on taskbar (try to fix or remove)
+- sddm breeze theme not applying at login
