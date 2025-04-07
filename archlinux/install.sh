@@ -14,24 +14,6 @@ NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 
-# Variables
-DISK_NAME=""
-DISK="/dev/${DISK_NAME}"
-
-EFI_PART="${DISK}1"
-BOOT_PART="${DISK}2"
-LUKS_PART="${DISK}3"
-EFI_SIZE="256M"
-BOOT_SIZE="512M"
-LUKS_NAME="luks_lvm"
-
-VG_NAME="arch"
-SWAP_LV="swap"
-ROOT_LV="root"
-HOME_LV="home"
-
-ROOT_LV_SIZE="64G"
-
 # Functions
 info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
@@ -44,14 +26,14 @@ input_username() {
   read -p "Set your username: " USERNAME
 }
 input_diskname() {
-  clear; echo; echo "[DRIVE SELECTION]"; echo
-  lsblk; echo
+  echo; echo "[DRIVE SELECTION]"; echo
+  lsblk
   while true; do
-    read -p "Enter drive name: " DISK_NAME
+    echo; read -p "Enter drive name: " DISK_NAME
     if lsblk | grep -q "^$DISK_NAME"; then
       break
     else
-      echo "Invalid drive name. Please enter a valid drive."
+      echo; echo "Invalid drive name. Please enter a valid drive."
     fi
   done
 }
@@ -60,7 +42,7 @@ input_password() {
   while true; do
     clear; echo; echo "[$title]"; echo
     if (( mismatch )); then echo "Passwords do not match. Try again."; echo; fi
-    read -s -p "Enter $msg: " pass1; echo
+    read -s -p "Enter $msg: " pass1; echo; echo
     read -s -p "Verify $msg: " pass2
     [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
     mismatch=1
@@ -111,6 +93,23 @@ mount_filesystems() {
   swapon /dev/mapper/${VG_NAME}-$SWAP_LV
   info "Filesystems mounted"
 }
+
+# Variables
+DISK="/dev/${DISK_NAME}"
+
+EFI_PART="${DISK}1"
+BOOT_PART="${DISK}2"
+LUKS_PART="${DISK}3"
+EFI_SIZE="256M"
+BOOT_SIZE="512M"
+LUKS_NAME="luks_lvm"
+
+VG_NAME="arch"
+SWAP_LV="swap"
+ROOT_LV="root"
+HOME_LV="home"
+
+ROOT_LV_SIZE="64G"
 
 input_username
 input_diskname
