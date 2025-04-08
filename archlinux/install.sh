@@ -14,6 +14,26 @@ NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 
+# Variables
+USERNAME=""
+DISK_NAME=""
+
+DISK="/dev/$DISK_NAME"
+
+EFI_PART="${DISK}1"
+BOOT_PART="${DISK}2"
+LUKS_PART="${DISK}3"
+EFI_SIZE="256M"
+BOOT_SIZE="512M"
+LUKS_NAME="luks_lvm"
+
+VG_NAME="arch"
+SWAP_LV="swap"
+ROOT_LV="root"
+HOME_LV="home"
+
+ROOT_LV_SIZE="64G"
+
 # Functions
 info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
@@ -96,46 +116,12 @@ mount_filesystems() {
   swapon /dev/mapper/${VG_NAME}-$SWAP_LV
   info "Filesystems mounted"
 }
-
-# Variables
-USERNAME=""
-DISK_NAME=""
-
-DISK="/dev/$DISK_NAME"
-
-EFI_PART="${DISK}1"
-BOOT_PART="${DISK}2"
-LUKS_PART="${DISK}3"
-EFI_SIZE="256M"
-BOOT_SIZE="512M"
-LUKS_NAME="luks_lvm"
-
-VG_NAME="arch"
-SWAP_LV="swap"
-ROOT_LV="root"
-HOME_LV="home"
-
-ROOT_LV_SIZE="64G"
-
-input_username
-input_diskname
-input_password "USER PASSWORD" "user password" USER_PASSWD
-input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
-input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
-
-clear
-create_partitions
-format_partitions
-setup_lvm
-format_lvm_partitions
-mount_filesystems
-
-# Generate mirror list
+generate_mirrorlist() {
   info "Generate mirror list"
   reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
   info "Mirror list generated"
-
-# Install base system
+}
+install_base_system() {
   info "Install packages"
   if grep -qi "amd" /proc/cpuinfo; then
     MICROCODE="amd-ucode"
@@ -155,13 +141,13 @@ mount_filesystems
   pacstrap -K /mnt $PACKAGES $MICROCODE $GPU_DRIVERS
   # todo: Selection, extra kernels: linux-zen linux-zen-headers, linux-lts linux-lts-headers
   info "Packages installed"
-
-# Generate fstab
+}
+generate_fstab() {
   info "Generate fstab"
   genfstab -U /mnt >> /mnt/etc/fstab
   info "fstab generated"
-
-# Enter chroot
+}
+enter_chroot() {
   info "Enter chroot"
   arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
   sed -i 's/#de_DE.UTF-8 UTF-8/de_DE.UTF-8 UTF-8/;s/#en_GB.UTF-8 UTF-8/en_GB.UTF-8 UTF-8/;s/#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
@@ -184,8 +170,8 @@ mount_filesystems
   systemctl enable sddm
   systemctl enable sshd"
   info "Exit chroot"
-
-# Result screen
+}
+result_output() {
   info "Installation complete!"
   #sda1size=$(($(blockdev --getsize64 $EFI_PART)/1024/1024))
   #sda2size=$(($(blockdev --getsize64 $BOOT_PART)/1024/1024))
@@ -196,7 +182,28 @@ mount_filesystems
   echo; echo "System Summary:"
   lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT
   echo; read -p "Press enter to continue (Reboot)"
-
-# Unmount and reboot
+}
+reboot() {
   umount -R /mnt || warning "Some partitions failed to unmount."
-  swapoff -a; sleep 2; reboot
+  swapoff -a
+  sleep 2; reboot
+}
+
+input_username
+input_diskname
+input_password "USER PASSWORD" "user password" USER_PASSWD
+input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
+input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
+
+clear
+create_partitions
+format_partitions
+setup_lvm
+format_lvm_partitions
+mount_filesystems
+generate_mirrorlist
+install_base_system
+generate_fstab
+enter_chroot
+
+reboot
