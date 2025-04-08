@@ -22,8 +22,10 @@ warning() {
   echo; echo -e "${RED}[WARNING] ${NC}$1"
 }
 input_username() {
+  local username
   clear; echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " USERNAME
+  read -p "Set your username: " username
+  eval "USERNAME='$username'"
 }
 input_diskname() {
   local disk_name
@@ -96,6 +98,9 @@ mount_filesystems() {
 }
 
 # Variables
+USERNAME=""
+DISK_NAME=""
+
 DISK="/dev/$DISK_NAME"
 
 EFI_PART="${DISK}1"
