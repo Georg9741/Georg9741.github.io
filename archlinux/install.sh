@@ -144,7 +144,7 @@ enter_chroot() {
   sed -i 's|Current=|Current=breeze|' /etc/sddm.conf
   useradd -m -G wheel $USERNAME
   echo -e 'root:"$ROOT_PASSWD"\n"$USERNAME":"$USER_PASSWD"' | chpasswd
-  sed -i 's|x-scheme-handler/kitty;||' /usr/share/applications/kitty-open.desktop
+  rm -f /etc/xdg/autostart/kitty-open.desktop
   systemctl enable NetworkManager
   systemctl enable sddm
   systemctl enable sshd
@@ -153,7 +153,7 @@ enter_chroot() {
   mkinitcpio -P
   grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=GRUB
   sed -i 's|^GRUB_CMDLINE_LINUX_DEFAULT=.*|GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3 root=/dev/mapper/$VG_NAME-$ROOT_LV cryptdevice=$LUKS_PART:$LUKS_NAME quiet\"|' /etc/default/grub
-  grub-mkconfig -o /boot/grub/grub.cfg"
+  grub-mkconfig -o /boot/grub/grub.cfg" # testing rm -f /etc/xdg/autostart/kitty-open.desktop
   info "Exit chroot"
 }
 result_output() {
