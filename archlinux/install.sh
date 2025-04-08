@@ -11,11 +11,6 @@ clear
 # Exit on error
 set -euo pipefail
 
-# Colors
-NC="\033[0m" # No Color
-RED="\033[0;31m"
-GREEN="\033[0;32m"
-
 # Functions
 info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
@@ -25,7 +20,8 @@ warning() {
 }
 input_username() {
   echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " USERNAME
+  read -p "Set your username: " username
+  echo "$username"
 }
 input_diskname() {
   echo; echo "[DRIVE SELECTION]"; echo
@@ -159,7 +155,8 @@ enter_chroot() {
   grub-mkconfig -o /boot/grub/grub.cfg
   systemctl enable NetworkManager
   systemctl enable sddm
-  systemctl enable sshd"
+  systemctl enable sshd
+  rm -f /mnt/home/$USERNAME/.config/plasma-org.kde.plasma.desktop-appletsrc"
   info "Exit chroot"
 }
 result_output() {
@@ -181,22 +178,21 @@ unmount_and_reboot() {
 }
 
 # Variables
-input_username
+NC="\033[0m" # No Color
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+USERNAME=$(input_username)
 input_diskname
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
 input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
-
 DISK="/dev/$DISK_NAME"
-
 EFI_PART="${DISK}1"
 BOOT_PART="${DISK}2"
 LUKS_PART="${DISK}3"
-
 EFI_SIZE="256M"
 BOOT_SIZE="512M"
 LUKS_NAME="luks_lvm"
-
 VG_NAME="arch"
 SWAP_LV="swap"
 ROOT_LV="root"
