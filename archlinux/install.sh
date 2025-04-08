@@ -74,7 +74,7 @@ setup_lvm() {
   fi
   pvcreate /dev/mapper/$LUKS_NAME
   vgcreate $VG_NAME /dev/mapper/$LUKS_NAME
-  lvcreate $VG_NAME -n $SWAP_LV -L ${SWAP_SIZE}G -C y
+  lvcreate $VG_NAME -n $SWAP_LV -L ${swap_size}G -C y
   lvcreate $VG_NAME -n $ROOT_LV -L $ROOT_LV_SIZE
   lvcreate $VG_NAME -n $HOME_LV -l +100%FREE
   info "LVM Setup finished"
