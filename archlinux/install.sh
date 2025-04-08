@@ -14,7 +14,13 @@ NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 
-# Variables
+# Functions
+info() {
+  echo; echo -e "${GREEN}[INFO] ${NC}$1"
+}
+warning() {
+  echo; echo -e "${RED}[WARNING] ${NC}$1"
+}
 input_username() {
   echo; echo "[USERNAME]"; echo
   read -p "Set your username: " USERNAME
@@ -41,30 +47,6 @@ input_password() {
     [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
     mismatch=1
   done
-}
-DISK="/dev/$DISK_NAME"
-
-EFI_PART="${DISK}1"
-BOOT_PART="${DISK}2"
-LUKS_PART="${DISK}3"
-
-EFI_SIZE="256M"
-BOOT_SIZE="512M"
-LUKS_NAME="luks_lvm"
-
-VG_NAME="arch"
-SWAP_LV="swap"
-ROOT_LV="root"
-HOME_LV="home"
-
-ROOT_LV_SIZE="64G"
-
-# Functions
-info() {
-  echo; echo -e "${GREEN}[INFO] ${NC}$1"
-}
-warning() {
-  echo; echo -e "${RED}[WARNING] ${NC}$1"
 }
 create_partitions() {
   info "Partitioning"
@@ -184,13 +166,31 @@ reboot() {
   sleep 2; reboot
 }
 
-# Script
+# Variables
 input_username
 input_diskname
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
 input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
 
+DISK="/dev/$DISK_NAME"
+
+EFI_PART="${DISK}1"
+BOOT_PART="${DISK}2"
+LUKS_PART="${DISK}3"
+
+EFI_SIZE="256M"
+BOOT_SIZE="512M"
+LUKS_NAME="luks_lvm"
+
+VG_NAME="arch"
+SWAP_LV="swap"
+ROOT_LV="root"
+HOME_LV="home"
+
+ROOT_LV_SIZE="64G"
+
+# Script
 clear
 create_partitions
 format_partitions
@@ -201,7 +201,5 @@ generate_mirrorlist
 install_base_system
 generate_fstab
 enter_chroot
-
 result_output
-
 reboot
