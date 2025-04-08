@@ -6,6 +6,8 @@
 # chmod +x install.sh
 # ./install.sh
 
+clear
+
 # Exit on error
 set -euo pipefail
 
@@ -191,7 +193,6 @@ HOME_LV="home"
 ROOT_LV_SIZE="64G"
 
 # Script
-clear
 create_partitions
 format_partitions
 setup_lvm
