@@ -15,14 +15,39 @@ RED="\033[0;31m"
 GREEN="\033[0;32m"
 
 # Variables
-USERNAME=""
-DISK_NAME=""
-
+input_username() {
+  echo; echo "[USERNAME]"; echo
+  read -p "Set your username: " USERNAME
+}
+input_diskname() {
+  echo; echo "[DRIVE SELECTION]"; echo
+  lsblk
+  while true; do
+    echo; read -p "Enter drive name: " DISK_NAME
+    if lsblk | grep -q "^$DISK_NAME"; then
+      break
+    else
+      echo; echo "Invalid drive name. Please enter a valid drive."
+    fi
+  done
+}
+input_password() {
+  local mismatch=0 title=$1 msg=$2 varname=$3 pass1 pass2
+  while true; do
+    clear; echo; echo "[$title]"; echo
+    if (( mismatch )); then echo "Passwords do not match. Try again."; echo; fi
+    read -s -p "Enter $msg: " pass1; echo; echo
+    read -s -p "Verify $msg: " pass2
+    [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
+    mismatch=1
+  done
+}
 DISK="/dev/$DISK_NAME"
 
 EFI_PART="${DISK}1"
 BOOT_PART="${DISK}2"
 LUKS_PART="${DISK}3"
+
 EFI_SIZE="256M"
 BOOT_SIZE="512M"
 LUKS_NAME="luks_lvm"
@@ -40,36 +65,6 @@ info() {
 }
 warning() {
   echo; echo -e "${RED}[WARNING] ${NC}$1"
-}
-input_username() {
-  local username
-  clear; echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " username
-  eval "USERNAME='$username'"
-}
-input_diskname() {
-  local disk_name
-  echo; echo "[DRIVE SELECTION]"; echo
-  lsblk
-  while true; do
-    echo; read -p "Enter drive name: " disk_name
-    if lsblk | grep -q "^$disk_name"; then
-      eval "DISK_NAME='$disk_name'" && break
-    else
-      echo; echo "Invalid drive name. Please enter a valid drive."
-    fi
-  done
-}
-input_password() {
-  local mismatch=0 title=$1 msg=$2 varname=$3 pass1 pass2
-  while true; do
-    clear; echo; echo "[$title]"; echo
-    if (( mismatch )); then echo "Passwords do not match. Try again."; echo; fi
-    read -s -p "Enter $msg: " pass1; echo; echo
-    read -s -p "Verify $msg: " pass2
-    [[ "$pass1" == "$pass2" ]] && eval "$varname='$pass1'" && break
-    mismatch=1
-  done
 }
 create_partitions() {
   info "Partitioning"
@@ -189,6 +184,7 @@ reboot() {
   sleep 2; reboot
 }
 
+# Script
 input_username
 input_diskname
 input_password "USER PASSWORD" "user password" USER_PASSWD
