@@ -144,7 +144,7 @@ enter_chroot() {
   sed -i 's|Current=|Current=breeze|' /etc/sddm.conf
   useradd -m -G wheel $USERNAME
   echo -e 'root:"$ROOT_PASSWD"\n"$USERNAME":"$USER_PASSWD"' | chpasswd
-  sudo sed -i 's|x-scheme-handler/kitty;||' /usr/share/applications/kitty-open.desktop
+  sed -i 's|x-scheme-handler/kitty;||' /usr/share/applications/kitty-open.desktop
   systemctl enable NetworkManager
   systemctl enable sddm
   systemctl enable sshd
