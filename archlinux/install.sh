@@ -122,9 +122,6 @@ install_base_system() {
         ;;
     esac
   done
-  if [[ "$gpu_drivers" == "mesa" ]]; then
-    warning "No supported GPU vendor detected, using mesa only."
-  fi
   pacstrap -K /mnt $packages $microcode $gpu_drivers
   # todo: Selection, extra kernels: linux-zen linux-zen-headers, linux-lts linux-lts-headers
   info "Packages installed"
