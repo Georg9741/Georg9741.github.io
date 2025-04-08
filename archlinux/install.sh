@@ -174,7 +174,7 @@ result_output() {
   lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT
   echo; read -p "Press enter to continue (Reboot)"
 }
-reboot() {
+unmount_and_reboot() {
   umount -R /mnt || warning "Some partitions failed to unmount."
   swapoff -a
   sleep 2; reboot
@@ -215,4 +215,4 @@ install_base_system
 generate_fstab
 enter_chroot
 result_output
-reboot
+unmount_and_reboot
