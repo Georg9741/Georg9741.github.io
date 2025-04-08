@@ -26,13 +26,13 @@ input_username() {
   read -p "Set your username: " USERNAME
 }
 input_diskname() {
+  local disk_name
   echo; echo "[DRIVE SELECTION]"; echo
   lsblk
   while true; do
-    echo; read -p "Enter drive name: " DISK_NAME
-    if lsblk | grep -q "^$DISK_NAME"; then
-      echo "$DISK_NAME"
-      break
+    echo; read -p "Enter drive name: " disk_name
+    if lsblk | grep -q "^$disk_name"; then
+      eval "DISK_NAME='$disk_name'" && break
     else
       echo; echo "Invalid drive name. Please enter a valid drive."
     fi
@@ -96,7 +96,7 @@ mount_filesystems() {
 }
 
 # Variables
-DISK="/dev/$(input_diskname)"
+DISK="/dev/$DISK_NAME"
 
 EFI_PART="${DISK}1"
 BOOT_PART="${DISK}2"
