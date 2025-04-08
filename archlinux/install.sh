@@ -195,7 +195,6 @@ VG_NAME="arch"
 SWAP_LV="swap"
 ROOT_LV="root"
 HOME_LV="home"
-
 ROOT_LV_SIZE="64G"
 
 # Script
