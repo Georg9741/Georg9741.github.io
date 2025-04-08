@@ -101,23 +101,35 @@ generate_mirrorlist() {
   info "Mirror list generated"
 }
 install_base_system() {
+  local gpu_drivers="mesa" microcode vendor
+  local packages="base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober plasma openssh kitty fastfetch"
   info "Install packages"
   if grep -qi "amd" /proc/cpuinfo; then
-    MICROCODE="amd-ucode"
+    microcode="amd-ucode"
   elif grep -qi "intel" /proc/cpuinfo; then
-    MICROCODE="intel-ucode"
+    microcode="intel-ucode"
   fi
-  if lspci | grep -E "VGA|3D" | grep -qi "amd"; then
-    GPU_DRIVERS="mesa libva-mesa-driver"
-  elif lspci | grep -E "VGA|3D" | grep -qi "nvidia"; then
-    GPU_DRIVERS="nvidia nvidia-utils nvidia-lts"
-  elif lspci | grep -E "VGA|3D" | grep -qi "intel"; then
-    GPU_DRIVERS="mesa intel-media-driver"
-  else
-    warning "Could not detect a supported GPU vendor."
+  for card in /sys/class/drm/card*/device/vendor; do
+    vendor=$(cat "$card" 2>/dev/null)
+    case "$vendor" in
+      0x1002|0x1022) # AMD
+        gpu_drivers="$gpu_drivers libva-mesa-driver"
+        ;;
+      0x10de) # NVIDIA
+        gpu_drivers="$gpu_drivers nvidia nvidia-utils nvidia-lts"
+        ;;
+      0x8086) # Intel
+        gpu_drivers="$gpu_drivers intel-media-driver"
+        ;;
+      0x1414) # Hyper-V virtual GPU
+        gpu_drivers="mesa"
+        ;;
+    esac
+  done
+  if [[ "$gpu_drivers" == "mesa" ]]; then
+    warning "No supported GPU vendor detected, using mesa only."
   fi
-  PACKAGES="base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober plasma openssh kitty fastfetch"
-  pacstrap -K /mnt $PACKAGES $MICROCODE $GPU_DRIVERS
+  pacstrap -K /mnt $packages $microcode $gpu_drivers
   # todo: Selection, extra kernels: linux-zen linux-zen-headers, linux-lts linux-lts-headers
   info "Packages installed"
 }
