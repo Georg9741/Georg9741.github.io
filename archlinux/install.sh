@@ -31,6 +31,7 @@ input_diskname() {
   while true; do
     echo; read -p "Enter drive name: " DISK_NAME
     if lsblk | grep -q "^$DISK_NAME"; then
+      echo "$DISK_NAME"
       break
     else
       echo; echo "Invalid drive name. Please enter a valid drive."
@@ -95,7 +96,7 @@ mount_filesystems() {
 }
 
 # Variables
-DISK="/dev/${DISK_NAME}"
+DISK="/dev/$(input_diskname)"
 
 EFI_PART="${DISK}1"
 BOOT_PART="${DISK}2"
