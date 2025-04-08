@@ -206,4 +206,6 @@ install_base_system
 generate_fstab
 enter_chroot
 
+result_output
+
 reboot
