@@ -47,6 +47,7 @@ input_password() {
 }
 create_partitions() {
   info "Partitioning"
+  dd if=/dev/zero of=$DISK bs=1M count=100 oflag=sync
   echo -e "o\ny\nn\n\n\n+$EFI_SIZE\nef00\nn\n\n\n+$BOOT_SIZE\nef02\nn\n\n\n\n8309\nw\ny" | gdisk $DISK
   info "Partitioning finished"
 }
