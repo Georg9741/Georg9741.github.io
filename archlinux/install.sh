@@ -20,8 +20,7 @@ warning() {
 }
 input_username() {
   echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " username
-  echo "$username"
+  read -p "Set your username: " USERNAME
 }
 input_diskname() {
   echo; echo "[DRIVE SELECTION]"; echo
@@ -155,8 +154,7 @@ enter_chroot() {
   grub-mkconfig -o /boot/grub/grub.cfg
   systemctl enable NetworkManager
   systemctl enable sddm
-  systemctl enable sshd
-  rm -f /mnt/home/$USERNAME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+  systemctl enable sshd"
   info "Exit chroot"
 }
 result_output() {
@@ -181,8 +179,8 @@ unmount_and_reboot() {
 NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
-USERNAME=$(input_username)
-input_diskname
+input_username # USERNAME
+input_diskname # DISK_NAME
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
 input_password "DISK ENCRYPTION PASSWORD" "passphrase" CRYPT_PASSWD
