@@ -56,4 +56,4 @@ else
     efi=1
 fi
 
-export DIALOGRC="./dialog.rc"
+export DIALOGRC="dialog.rc"
