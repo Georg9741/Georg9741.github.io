@@ -53,3 +53,7 @@ if [ "$?" == "1" ]; then
 else
 	efi=1
 fi
+
+dialog --create-rc dialog.rc
+DIALOGRC="./dialog.rc"
+export DIALOGRC
