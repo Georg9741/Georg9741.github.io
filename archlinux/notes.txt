@@ -43,3 +43,13 @@ button_key_active_color = (YELLOW,MAGENTA,ON)
 button_key_inactive_color = (YELLOW,BLACK,ON)
 button_label_active_color = button_active_color
 button_label_inactive_color = dialog_color
+
+systemctl start pacman-init
+pacman -Sy dialog
+
+dmesg |grep efi: > /dev/null
+if [ "$?" == "1" ]; then
+	efi=0
+else
+	efi=1
+fi
