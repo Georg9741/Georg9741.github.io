@@ -32,18 +32,18 @@ Light Gray   0;37     White         1;37
 
 # dialog
 cat << EOF > dialog.rc
-    use_shadow = OFF
-    screen_color = (CYAN,BLACK,ON)
-    dialog_color = (WHITE,BLACK,OFF)
-    title_color = (CYAN,BLACK,ON)
-    border_color = (WHITE,BLACK,ON)
-    border2_color = border_color
-    button_active_color = (WHITE,MAGENTA,ON)
-    button_inactive_color = dialog_color
-    button_key_active_color = (YELLOW,MAGENTA,ON)
-    button_key_inactive_color = (YELLOW,BLACK,ON)
-    button_label_active_color = button_active_color
-    button_label_inactive_color = dialog_color
+use_shadow = OFF
+screen_color = (CYAN,BLACK,ON)
+dialog_color = (WHITE,BLACK,OFF)
+title_color = (CYAN,BLACK,ON)
+border_color = (WHITE,BLACK,ON)
+border2_color = border_color
+button_active_color = (WHITE,MAGENTA,ON)
+button_inactive_color = dialog_color
+button_key_active_color = (YELLOW,MAGENTA,ON)
+button_key_inactive_color = (YELLOW,BLACK,ON)
+button_label_active_color = button_active_color
+button_label_inactive_color = dialog_color
 EOF
 
 systemctl start pacman-init
