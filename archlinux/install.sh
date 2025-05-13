@@ -30,7 +30,7 @@ mainmenu(){
   options+=("" "")
   options+=("Option 5" "")
   sel=$(dialog --backtitle "$apptitle" --title "Main Menu" --cancel-button "Exit" --default-item "$nextitem" --menu "" 0 0 0 \
-    "$options[@]" \
+    "${options[@]}" \
     3>&1 1>&2 2>&3)
   if [ "$?" = "0" ]; then
     case ${sel} in
@@ -67,7 +67,7 @@ functiontemplate(){
 	options+=("option3" "")
 	options+=("option4" "")
 	sel=$(dialog --backtitle "$apptitle" --title "$txteditor" --menu "" 0 0 0 \
-		"$options[@]" \
+		"{$options[@]}" \
 		3>&1 1>&2 2>&3)
 	if [ "$?" = "0" ]; then
 		clear
