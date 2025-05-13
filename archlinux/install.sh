@@ -12,6 +12,10 @@ clear
 set -euo pipefail
 
 # Menu (Functions; in progress)
+apptitle="archinstall"
+pressanykey(){
+	read -n1 -p "${txtpressanykey}"
+}
 mainmenu(){
   if [ "$#" -gt 0 ]; then
     nextitem=$1
@@ -25,8 +29,8 @@ mainmenu(){
   options+=("Option 4" "")
   options+=("" "")
   options+=("Option 5" "")
-  sel=$(dialog --backtitle "archinstall" --title "Main Menu" --cancel-button "Exit" --default-item "$nextitem" --menu "" 0 0 0 \
-    "${options[@]}" \
+  sel=$(dialog --backtitle "$apptitle" --title "Main Menu" --cancel-button "Exit" --default-item "$nextitem" --menu "" 0 0 0 \
+    "$options[@]" \
     3>&1 1>&2 2>&3)
   if [ "$?" = "0" ]; then
     case ${sel} in
@@ -35,27 +39,62 @@ mainmenu(){
         nextitem="Option 2"
       ;;
       "Option 2")
-        # function2
+        functiontemplate
         nextitem="Option 3"
       ;;
       "Option 3")
-        # function3
+        functiontemplate
         nextitem="Option 4"
       ;;
       "Option 4")
-        # function4
+        functiontemplate
         nextitem="Option 5"
       ;;
       "Option 5")
-        # function5
-        continue
+        functiontemplate
         nextitem="Option 5"
       ;;
     esac
-    mainmenu "${nextitem}"
+    mainmenu "$nextitem"
   else
     clear
   fi
+}
+functiontemplate(){
+	options=()
+	options+=("option1" "")
+	options+=("option2" "")
+	options+=("option3" "")
+	options+=("option4" "")
+	sel=$(dialog --backtitle "$apptitle" --title "$txteditor" --menu "" 0 0 0 \
+		"$options[@]" \
+		3>&1 1>&2 2>&3)
+	if [ "$?" = "0" ]; then
+		clear
+		# Do something with selected option ($sel)
+		pressanykey
+	fi
+}
+functiontemplate(){
+	options=()
+	options+=("option1" "")
+	options+=("option2" "")
+	options+=("option3" "")
+	options+=("option4" "")
+	sel=$(dialog --backtitle "$apptitle" --title "$txteditor" --menu "" 0 0 0 \
+		"$options[@]" \
+		3>&1 1>&2 2>&3)
+	if [ "$?" = "0" ]; then
+		clear
+		# Do something with selected option ($sel)
+		pressanykey
+	fi
+}
+input_username() {
+  clear
+  echo; echo "[USERNAME]"; echo
+  read -p "Set your username: " USERNAME
+	pressanykey
 }
 
 # Functions
@@ -65,10 +104,10 @@ info() {
 warning() {
   echo; echo -e "${RED}[WARNING] ${NC}$1"
 }
-input_username() {
-  echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " USERNAME
-}
+#input_username() {
+#  echo; echo "[USERNAME]"; echo
+#  read -p "Set your username: " USERNAME
+#}
 input_diskname() {
   echo; echo "[DRIVE SELECTION]"; echo
   lsblk
