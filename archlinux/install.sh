@@ -14,7 +14,7 @@ set -euo pipefail
 # Menu (Functions; in progress)
 apptitle="archinstall"
 pressanykey(){
-	read -n1 -p "Press any key to continue."
+  echo; read -n1 -p "Press any key to continue."
 }
 mainmenu(){
   if [ "${1:-}" = "" ]; then
