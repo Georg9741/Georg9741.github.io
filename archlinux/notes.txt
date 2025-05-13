@@ -31,7 +31,15 @@ Cyan         0;36     Light Cyan    1;36
 Light Gray   0;37     White         1;37
 
 # dialog
-cat << EOF > dialog.rc
+systemctl start pacman-init
+pacman -Syu dialog
+dmesg |grep efi: > /dev/null
+if [ "$?" == "1" ]; then
+    efi=0
+else
+    efi=1
+fi
+cat << EOF > dialog.archinstall
 use_shadow = OFF
 screen_color = (CYAN,BLACK,ON)
 dialog_color = (WHITE,BLACK,OFF)
@@ -45,15 +53,7 @@ button_key_inactive_color = (YELLOW,BLACK,ON)
 button_label_active_color = button_active_color
 button_label_inactive_color = dialog_color
 EOF
-
-systemctl start pacman-init
-pacman -Sy dialog
-
-dmesg |grep efi: > /dev/null
-if [ "$?" == "1" ]; then
-    efi=0
-else
-    efi=1
-fi
-
-export DIALOGRC="dialog.rc"
+export DIALOGRC="dialog.archinstall"
+EDITOR=nano
+mainmenu
+rm dialog.archinstall
