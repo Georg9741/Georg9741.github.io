@@ -2,7 +2,7 @@
 
 # Usage
 # --------
-# curl -O https://georg9741.github.io/archlinux/install.sh
+# curl -LO georg9741.github.io/archlinux/install.sh
 # chmod +x install.sh
 # ./install.sh
 
