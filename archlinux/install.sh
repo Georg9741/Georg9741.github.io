@@ -95,10 +95,11 @@ warning() {
 #}
 input_diskname() {
   echo; echo "[DRIVE SELECTION]"; echo
-  lsblk
+  lsblk -n -o NAME,SIZE,MODEL
+  valid_disks=$(lsblk -n -o NAME)
   while true; do
     echo; read -p "Enter drive name: " DISK_NAME
-    if lsblk | grep -q "^$DISK_NAME"; then
+    if echo "$valid_disks" | grep -wq "^${DISK_NAME}$"; then
       break
     else
       echo; echo "Invalid drive name. Please enter a valid drive."
