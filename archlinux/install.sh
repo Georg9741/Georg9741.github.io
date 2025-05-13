@@ -13,10 +13,10 @@ set -euo pipefail
 
 # Menu (Functions; in progress)
 mainmenu(){
-  if [ "$1" = "" ]; then
-    nextitem="."
-  else
+  if [ "$#" -gt 0 ]
     nextitem=$1
+  else
+    nextitem="."
   fi
   options=()
   options+=("Set Username" "$USERNAME")
