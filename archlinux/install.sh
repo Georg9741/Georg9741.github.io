@@ -17,7 +17,7 @@ pressanykey(){
 	read -n1 -p "Press any key to continue."
 }
 mainmenu(){
-  if [ "${1}" = "" ]; then
+  if [ "${1:-}" = "" ]; then
     nextitem="."
   else
     nextitem=$1
