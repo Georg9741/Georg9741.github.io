@@ -291,6 +291,9 @@ button_key_active_color = (YELLOW,MAGENTA,ON)
 button_key_inactive_color = (YELLOW,BLACK,ON)
 button_label_active_color = button_active_color
 button_label_inactive_color = dialog_color
+menubox_color = dialog_color
+menubox_border_color = border_color
+menubox_border2_color = border_color
 EOF
 export DIALOGRC="dialog.archinstall"
 EDITOR=nano
