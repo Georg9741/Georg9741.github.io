@@ -272,7 +272,8 @@ ROOT_LV_SIZE="64G"
 # Menu (in progress)
 systemctl start pacman-init
 pacman -Sy --needed dialog
-dmesg |grep efi: > /dev/null
+echo "test"
+dmesg | grep efi: > /dev/null
 if [ "$?" == "1" ]; then
     efi=0
 else
