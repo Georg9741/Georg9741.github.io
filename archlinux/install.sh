@@ -13,7 +13,7 @@ set -euo pipefail
 
 # Menu (Functions; in progress)
 mainmenu(){
-  if [ "$#" -gt 0 ]
+  if [ "$#" -gt 0 ]; then
     nextitem=$1
   else
     nextitem="."
