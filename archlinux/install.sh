@@ -11,6 +11,53 @@ clear
 # Exit on error
 set -euo pipefail
 
+# Menu (Functions; in progress)
+mainmenu(){
+  if [ "$1" = "" ]; then
+    nextitem="."
+  else
+    nextitem=$1
+  fi
+  options=()
+  options+=("Set Username" "$USERNAME")
+  options+=("Option 2" "")
+  options+=("Option 3" "")
+  options+=("Option 4" "")
+  options+=("" "")
+  options+=("Option 5" "")
+  sel=$(dialog --backtitle "archinstall" --title "Main Menu" --cancel-button "Exit" --default-item "$nextitem" --menu "" 0 0 0 \
+    "${options[@]}" \
+    3>&1 1>&2 2>&3)
+  if [ "$?" = "0" ]; then
+    case ${sel} in
+      "Option 1")
+        input_username
+        nextitem="Option 2"
+      ;;
+      "Option 2")
+        # function2
+        nextitem="Option 3"
+      ;;
+      "Option 3")
+        # function3
+        nextitem="Option 4"
+      ;;
+      "Option 4")
+        # function4
+        nextitem="Option 5"
+      ;;
+      "Option 5")
+        # function5
+        continue
+        nextitem="Option 5"
+      ;;
+    esac
+    mainmenu "${nextitem}"
+  else
+    clear
+  fi
+}
+
 # Functions
 info() {
   echo; echo -e "${GREEN}[INFO] ${NC}$1"
@@ -178,7 +225,8 @@ unmount_and_reboot() {
 NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
-input_username # USERNAME
+#input_username # USERNAME
+USERNAME=""
 input_diskname # DISK_NAME
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
@@ -195,6 +243,33 @@ SWAP_LV="swap"
 ROOT_LV="root"
 HOME_LV="home"
 ROOT_LV_SIZE="64G"
+
+# Menu (in progress)
+systemctl start pacman-init
+pacman -Syu dialog
+dmesg |grep efi: > /dev/null
+if [ "$?" == "1" ]; then
+    efi=0
+else
+    efi=1
+fi
+cat << EOF > dialog.archinstall
+use_shadow = OFF
+screen_color = (CYAN,BLACK,ON)
+dialog_color = (WHITE,BLACK,OFF)
+title_color = (CYAN,BLACK,ON)
+border_color = (WHITE,BLACK,ON)
+border2_color = border_color
+button_active_color = (WHITE,MAGENTA,ON)
+button_inactive_color = dialog_color
+button_key_active_color = (YELLOW,MAGENTA,ON)
+button_key_inactive_color = (YELLOW,BLACK,ON)
+button_label_active_color = button_active_color
+button_label_inactive_color = dialog_color
+EOF
+export DIALOGRC="dialog.archinstall"
+EDITOR=nano
+mainmenu
 
 # Script
 create_partitions
