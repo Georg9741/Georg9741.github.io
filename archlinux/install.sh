@@ -38,7 +38,7 @@ mainmenu(){
         input_username
         nextitem="Option 2"
       ;;
-      "Option 2")
+      "Set Username")
         functiontemplate
         nextitem="Option 3"
       ;;
