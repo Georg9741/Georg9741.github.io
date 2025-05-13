@@ -79,7 +79,7 @@ input_username() {
   clear
   echo; echo "[USERNAME]"; echo
   read -p "Set your username: " USERNAME
-	pressanykey
+  pressanykey
 }
 
 # Functions
