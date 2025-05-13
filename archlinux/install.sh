@@ -270,6 +270,7 @@ EOF
 export DIALOGRC="dialog.archinstall"
 EDITOR=nano
 mainmenu
+rm dialog.archinstall
 
 # Script
 create_partitions
