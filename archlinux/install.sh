@@ -61,19 +61,19 @@ mainmenu(){
   fi
 }
 functiontemplate(){
-	options=()
-	options+=("option1" "")
-	options+=("option2" "")
-	options+=("option3" "")
-	options+=("option4" "")
-	sel=$(dialog --backtitle "$apptitle" --title "$txteditor" --menu "" 0 0 0 \
-		"{$options[@]}" \
-		3>&1 1>&2 2>&3)
-	if [ "$?" = "0" ]; then
-		clear
-		# Do something with selected option ($sel)
-		pressanykey
-	fi
+  options=()
+  options+=("option1" "")
+  options+=("option2" "")
+  options+=("option3" "")
+  options+=("option4" "")
+  sel=$(dialog --backtitle "$apptitle" --title "Test" --menu "" 0 0 0 \
+    "${options[@]}" \
+    3>&1 1>&2 2>&3)
+  if [ "$?" = "0" ]; then
+    clear
+    # Do something with selected option ($sel)
+    pressanykey
+  fi
 }
 input_username() {
   clear
