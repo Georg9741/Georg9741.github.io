@@ -272,13 +272,15 @@ ROOT_LV_SIZE="64G"
 # Menu (in progress)
 systemctl start pacman-init
 pacman -Sy --needed dialog
-echo "test"
+
 dmesg | grep efi: > /dev/null
+echo "test1"
 if [ "$?" == "1" ]; then
     efi=0
 else
     efi=1
 fi
+echo "test2"
 cat << EOF > dialog.archinstall
 use_shadow = OFF
 screen_color = (CYAN,BLACK,ON)
@@ -293,8 +295,11 @@ button_key_inactive_color = (YELLOW,BLACK,ON)
 button_label_active_color = button_active_color
 button_label_inactive_color = dialog_color
 EOF
+echo "test3"
 export DIALOGRC="dialog.archinstall"
+echo "test4"
 EDITOR=nano
+echo "test5"
 mainmenu
 rm dialog.archinstall
 
