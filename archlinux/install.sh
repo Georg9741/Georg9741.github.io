@@ -277,6 +277,7 @@ fi
 cat << EOF > dialog.archinstall
 use_shadow = OFF
 screen_color = (CYAN,BLACK,ON)
+shadow_color = (BLACK,BLACK,ON)
 dialog_color = (WHITE,BLACK,OFF)
 title_color = (CYAN,BLACK,ON)
 border_color = (WHITE,BLACK,ON)
@@ -287,9 +288,19 @@ button_key_active_color = (YELLOW,MAGENTA,ON)
 button_key_inactive_color = (YELLOW,BLACK,ON)
 button_label_active_color = button_active_color
 button_label_inactive_color = dialog_color
+inputbox_color = dialog_color
+inputbox_border_color = dialog_color
+inputbox_border2_color = inputbox_border_color
+searchbox_color = dialog_color
+searchbox_title_color = title_color
+searchbox_border_color = border_color
+searchbox_border2_color = searchbox_border_color
+position_indicator_color = title_color
 menubox_color = dialog_color
 menubox_border_color = border_color
-menubox_border2_color = border_color
+menubox_border2_color = menubox_border_color
+item_color = dialog_color
+item_selected_color = button_active_color
 EOF
 export DIALOGRC="dialog.archinstall"
 EDITOR=nano
