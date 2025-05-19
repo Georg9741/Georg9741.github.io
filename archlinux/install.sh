@@ -277,7 +277,6 @@ startscript() {
   generate_fstab
   enter_chroot
   result_output
-  unmount_and_reboot
 }
 
 # Menu (in progress)
@@ -334,3 +333,5 @@ export DIALOGRC="dialog.archinstall"
 EDITOR=nano
 mainmenu
 rm dialog.archinstall
+
+unmount_and_reboot
