@@ -32,11 +32,11 @@ mainmenu(){
   sel=$(dialog --backtitle "${apptitle}" --title "Main Menu" --cancel-button "Exit" --default-item "${nextitem}" --menu "" 0 0 0 "${options[@]}" 3>&1 1>&2 2>&3)
   if [ "$?" = "0" ]; then
     case ${sel} in
-      "Option 1")
+      "Set Username")
         input_username
         nextitem="Option 2"
       ;;
-      "Set Username")
+      "Option 2")
         functiontemplate
         nextitem="Option 3"
       ;;
