@@ -49,7 +49,7 @@ mainmenu(){
         nextitem="Option 5"
       ;;
       "Option 5")
-        functiontemplate
+        startscript
         nextitem="Option 5"
       ;;
     esac
@@ -247,7 +247,7 @@ NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
 #input_username # USERNAME
-USERNAME=""
+USERNAME="testuser"
 input_diskname # DISK_NAME
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
@@ -321,14 +321,16 @@ mainmenu
 rm dialog.archinstall
 
 # Script
-create_partitions
-format_partitions
-setup_lvm
-format_lvm_partitions
-mount_filesystems
-generate_mirrorlist
-install_base_system
-generate_fstab
-enter_chroot
-result_output
-unmount_and_reboot
+startscript() {
+  create_partitions
+  format_partitions
+  setup_lvm
+  format_lvm_partitions
+  mount_filesystems
+  generate_mirrorlist
+  install_base_system
+  generate_fstab
+  enter_chroot
+  result_output
+  unmount_and_reboot
+}
