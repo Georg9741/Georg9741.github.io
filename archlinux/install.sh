@@ -26,9 +26,9 @@ mainmenu(){
   options+=("Set Username" "${USERNAME}")
   options+=("Option 2" "")
   options+=("Option 3" "")
-  options+=("Option 4" "")
+  options+=("Start Script" "")
   options+=("" "")
-  options+=("Option 5" "")
+  options+=("Reboot" "")
   sel=$(dialog --backtitle "${apptitle}" --title "Main Menu" --cancel-button "Exit" --default-item "${nextitem}" --menu "" 0 0 0 "${options[@]}" 3>&1 1>&2 2>&3)
   if [ "$?" = "0" ]; then
     case ${sel} in
@@ -44,12 +44,12 @@ mainmenu(){
         functiontemplate
         nextitem="Option 4"
       ;;
-      "Option 4")
-        functiontemplate
+      "Start Script")
+        startscript
         nextitem="Option 5"
       ;;
-      "Option 5")
-        startscript
+      "Reboot")
+        unmount_and_reboot
         nextitem="Option 5"
       ;;
     esac
@@ -333,5 +333,3 @@ export DIALOGRC="dialog.archinstall"
 EDITOR=nano
 mainmenu
 rm dialog.archinstall
-
-unmount_and_reboot
