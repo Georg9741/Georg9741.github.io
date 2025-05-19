@@ -265,6 +265,21 @@ ROOT_LV="root"
 HOME_LV="home"
 ROOT_LV_SIZE="64G"
 
+# Script
+startscript() {
+  create_partitions
+  format_partitions
+  setup_lvm
+  format_lvm_partitions
+  mount_filesystems
+  generate_mirrorlist
+  install_base_system
+  generate_fstab
+  enter_chroot
+  result_output
+  unmount_and_reboot
+}
+
 # Menu (in progress)
 systemctl start pacman-init
 pacman -Sy --needed dialog
@@ -319,18 +334,3 @@ export DIALOGRC="dialog.archinstall"
 EDITOR=nano
 mainmenu
 rm dialog.archinstall
-
-# Script
-startscript() {
-  create_partitions
-  format_partitions
-  setup_lvm
-  format_lvm_partitions
-  mount_filesystems
-  generate_mirrorlist
-  install_base_system
-  generate_fstab
-  enter_chroot
-  result_output
-  unmount_and_reboot
-}
