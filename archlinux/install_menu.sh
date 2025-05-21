@@ -96,8 +96,9 @@ continue(){
   pressanykey
 }
 
-# Dialog Config and Menu Start
-cat << EOF > dialog.archinstall
+# Dialog Config
+create_dialogrc(){
+  cat << EOF > $1
 use_shadow = OFF
 screen_color = (CYAN,BLACK,OFF)
 shadow_color = (BLACK,BLACK,ON)
@@ -138,7 +139,10 @@ form_text_color = (WHITE,CYAN,ON)
 form_item_readonly_color = (CYAN,WHITE,ON)
 gauge_color = title_color
 EOF
-export DIALOGRC="dialog.archinstall"
-EDITOR=nano
+  export DIALOGRC="dialog.archinstall"
+}
+
+# Start Script
+create_dialogrc dialog.archinstall
 main_menu
 rm dialog.archinstall
