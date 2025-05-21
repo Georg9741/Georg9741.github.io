@@ -11,85 +11,18 @@ clear
 # Exit on error
 set -euo pipefail
 
-# Menu (Functions; in progress)
-apptitle="archinstall"
-pressanykey(){
-  echo; read -n1 -p "Press any key to continue."
-}
-mainmenu(){
-  if [ "${1:-}" = "" ]; then
-    nextitem="."
-  else
-    nextitem=${1}
-  fi
-  options=()
-  options+=("Set Username" "${USERNAME}")
-  options+=("Option 2" "")
-  options+=("Option 3" "")
-  options+=("Start Script" "")
-  options+=("" "")
-  options+=("Reboot" "")
-  sel=$(dialog --backtitle "${apptitle}" --title "Main Menu" --cancel-button "Exit" --default-item "${nextitem}" --menu "" 0 0 0 "${options[@]}" 3>&1 1>&2 2>&3)
-  if [ "$?" = "0" ]; then
-    case ${sel} in
-      "Set Username")
-        input_username
-        nextitem="Option 2"
-      ;;
-      "Option 2")
-        functiontemplate
-        nextitem="Option 3"
-      ;;
-      "Option 3")
-        functiontemplate
-        nextitem="Option 4"
-      ;;
-      "Start Script")
-        startscript
-        nextitem="Option 5"
-      ;;
-      "Reboot")
-        unmount_and_reboot
-        nextitem="Option 5"
-      ;;
-    esac
-    mainmenu "${nextitem}"
-  else
-    clear
-  fi
-}
-functiontemplate(){
-  options=()
-  options+=("option1" "")
-  options+=("option2" "")
-  options+=("option3" "")
-  options+=("option4" "")
-  sel=$(dialog --backtitle "${apptitle}" --title "Test" --menu "" 0 0 0 "${options[@]}" 3>&1 1>&2 2>&3)
-  if [ "$?" = "0" ]; then
-    clear
-    # Do something with selected option (${sel})
-    pressanykey
-  fi
-}
-input_username() {
-  clear
-  echo; echo "[USERNAME]"; echo
-  read -p "Set your username: " USERNAME
-  pressanykey
-}
-
 # Functions
-info() {
+info(){
   echo; echo -e "${GREEN}[INFO] ${NC}${1}"
 }
-warning() {
+warning(){
   echo; echo -e "${RED}[WARNING] ${NC}${1}"
 }
-#input_username() {
-#  echo; echo "[USERNAME]"; echo
-#  read -p "Set your username: " USERNAME
-#}
-input_diskname() {
+input_username(){
+  echo; echo "[USERNAME]"; echo
+  read -p "Set your username: " USERNAME
+}
+input_diskname(){
   echo; echo "[DRIVE SELECTION]"; echo
   lsblk -n -o NAME,SIZE,MODEL
   valid_disks=$(lsblk -n -o NAME)
@@ -102,7 +35,7 @@ input_diskname() {
     fi
   done
 }
-input_password() {
+input_password(){
   local mismatch=0 title=${1} msg=${2} varname=${3} pass1 pass2
   while true; do
     clear; echo; echo "[${title}]"; echo
@@ -113,13 +46,13 @@ input_password() {
     mismatch=1
   done
 }
-create_partitions() {
+create_partitions(){
   info "Partitioning"
   dd if=/dev/zero of=${DISK} bs=1M count=100 oflag=sync
   echo -e "o\ny\nn\n\n\n+${EFI_SIZE}\nef00\nn\n\n\n+${BOOT_SIZE}\nef02\nn\n\n\n\n8309\nw\ny" | gdisk ${DISK}
   info "Partitioning finished"
 }
-format_partitions() {
+format_partitions(){
   info "Format partitions"
   mkfs.fat -F32 ${EFI_PART}
   mkfs.ext4 ${BOOT_PART}
@@ -127,7 +60,7 @@ format_partitions() {
   echo -n "${CRYPT_PASSWD}" | cryptsetup open ${LUKS_PART} ${LUKS_NAME}
   info "Partitions formatted"
 }
-setup_lvm() {
+setup_lvm(){
   info "LVM Setup"
   local ram_size=$(grep MemTotal /proc/meminfo | awk '{print $2}') # in KB
   local swap_size=$((ram_size/1024/1024)) # Convert to GB
@@ -143,14 +76,14 @@ setup_lvm() {
   lvcreate ${VG_NAME} -n ${HOME_LV} -l +100%FREE
   info "LVM Setup finished"
 }
-format_lvm_partitions() {
+format_lvm_partitions(){
   info "Format LVM partitions"
   mkswap /dev/mapper/${VG_NAME}-${SWAP_LV}
   mkfs.ext4 /dev/mapper/${VG_NAME}-${ROOT_LV} -L ${ROOT_LV}
   mkfs.ext4 /dev/mapper/${VG_NAME}-${HOME_LV} -L ${HOME_LV}
   info "LVM partitions formatted"
 }
-mount_filesystems() {
+mount_filesystems(){
   info "Mount filesystems"
   mount /dev/mapper/${VG_NAME}-${ROOT_LV} /mnt
   mount /dev/mapper/${VG_NAME}-${HOME_LV} /mnt/home --mkdir
@@ -159,12 +92,12 @@ mount_filesystems() {
   swapon /dev/mapper/${VG_NAME}-${SWAP_LV}
   info "Filesystems mounted"
 }
-generate_mirrorlist() {
+generate_mirrorlist(){
   info "Generate mirror list"
   reflector -l 10 -p https -c DE --sort rate --save /etc/pacman.d/mirrorlist
   info "Mirror list generated"
 }
-install_base_system() {
+install_base_system(){
   local gpu_drivers="mesa" microcode vendor
   local packages="base linux linux-headers linux-firmware base-devel efibootmgr git grub lvm2 nano networkmanager os-prober plasma openssh kitty fastfetch"
   info "Install packages"
@@ -194,12 +127,12 @@ install_base_system() {
   # todo: Selection, extra kernels: linux-zen linux-zen-headers, linux-lts linux-lts-headers
   info "Packages installed"
 }
-generate_fstab() {
+generate_fstab(){
   info "Generate fstab"
   genfstab -U /mnt >> /mnt/etc/fstab
   info "fstab generated"
 }
-enter_chroot() {
+enter_chroot(){
   info "Enter chroot"
   arch-chroot /mnt /bin/bash -c "ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime
   sed -i 's|#de_DE.UTF-8 UTF-8|de_DE.UTF-8 UTF-8|;s|#en_GB.UTF-8 UTF-8|en_GB.UTF-8 UTF-8|;s|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|' /etc/locale.gen
@@ -224,7 +157,7 @@ enter_chroot() {
   grub-mkconfig -o /boot/grub/grub.cfg" # testing rm -f /etc/xdg/autostart/kitty-open.desktop
   info "Exit chroot"
 }
-result_output() {
+result_output(){
   info "Installation complete!"
   #sda1size=$(($(blockdev --getsize64 ${EFI_PART})/1024/1024))
   #sda2size=$(($(blockdev --getsize64 ${BOOT_PART})/1024/1024))
@@ -236,7 +169,7 @@ result_output() {
   lsblk -o NAME,FSTYPE,SIZE,MOUNTPOINT
   echo; read -p "Press enter to continue (Reboot)"
 }
-unmount_and_reboot() {
+unmount_and_reboot(){
   umount -R /mnt || warning "Some partitions failed to unmount."
   swapoff -a
   sleep 2; reboot
@@ -246,8 +179,7 @@ unmount_and_reboot() {
 NC="\033[0m" # No Color
 RED="\033[0;31m"
 GREEN="\033[0;32m"
-#input_username # USERNAME
-USERNAME="testuser"
+input_username # USERNAME
 input_diskname # DISK_NAME
 input_password "USER PASSWORD" "user password" USER_PASSWD
 input_password "ROOT PASSWORD" "root password" ROOT_PASSWD
@@ -265,71 +197,15 @@ ROOT_LV="root"
 HOME_LV="home"
 ROOT_LV_SIZE="64G"
 
-# Script
-startscript() {
-  create_partitions
-  format_partitions
-  setup_lvm
-  format_lvm_partitions
-  mount_filesystems
-  generate_mirrorlist
-  install_base_system
-  generate_fstab
-  enter_chroot
-  result_output
-}
-
-# Menu (in progress)
-systemctl start pacman-init
-pacman -Sy --needed dialog
-dmesg | grep efi: > /dev/null
-if [ "$?" == "1" ]; then
-    efi=0
-else
-    efi=1
-fi
-cat << EOF > dialog.archinstall
-use_shadow = OFF
-screen_color = (CYAN,BLACK,ON)
-shadow_color = (BLACK,BLACK,ON)
-dialog_color = (WHITE,BLACK,OFF)
-title_color = (CYAN,BLACK,ON)
-border_color = (WHITE,BLACK,ON)
-border2_color = border_color
-button_active_color = (WHITE,MAGENTA,ON)
-button_inactive_color = dialog_color
-button_key_active_color = (YELLOW,MAGENTA,ON)
-button_key_inactive_color = (YELLOW,BLACK,ON)
-button_label_active_color = button_active_color
-button_label_inactive_color = dialog_color
-inputbox_color = dialog_color
-inputbox_border_color = dialog_color
-inputbox_border2_color = inputbox_border_color
-searchbox_color = dialog_color
-searchbox_title_color = title_color
-searchbox_border_color = border_color
-searchbox_border2_color = searchbox_border_color
-position_indicator_color = title_color
-menubox_color = dialog_color
-menubox_border_color = border_color
-menubox_border2_color = menubox_border_color
-item_color = dialog_color
-item_selected_color = button_active_color
-tag_color = title_color
-tag_selected_color = button_label_active_color
-tag_key_color = button_key_inactive_color
-tag_key_selected_color = (RED,BLUE,ON)
-check_color = dialog_color
-check_selected_color = button_active_color
-uarrow_color = (GREEN,WHITE,ON)
-darrow_color = uarrow_color
-itemhelp_color = (WHITE,BLACK,OFF)
-form_active_text_color = button_active_color
-form_text_color = (WHITE,CYAN,ON)
-form_item_readonly_color = (CYAN,WHITE,ON)
-gauge_color = title_color
-EOF
-export DIALOGRC="dialog.archinstall"
-EDITOR=nano
-mainmenu
-rm dialog.archinstall
+# Start Script
+create_partitions
+format_partitions
+setup_lvm
+format_lvm_partitions
+mount_filesystems
+generate_mirrorlist
+install_base_system
+generate_fstab
+enter_chroot
+result_output
+unmount_and_reboot
